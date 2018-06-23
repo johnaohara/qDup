@@ -1,6 +1,8 @@
-package perf.qdup;
+package perf.qdup.console;
 
 import com.sun.net.httpserver.HttpServer;
+import perf.qdup.Coordinator;
+import perf.qdup.Run;
 import perf.qdup.cmd.CommandDispatcher;
 import perf.yaup.StringUtil;
 import perf.yaup.json.Json;

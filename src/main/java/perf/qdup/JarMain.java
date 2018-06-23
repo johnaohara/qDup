@@ -18,6 +18,9 @@ import perf.qdup.config.CmdBuilder;
 import perf.qdup.config.RunConfig;
 import perf.qdup.config.RunConfigBuilder;
 import perf.qdup.config.YamlParser;
+import perf.qdup.console.JsonServer;
+import perf.qdup.console.WebConsole;
+import perf.qdup.util.Runner;
 import perf.yaup.StringUtil;
 
 import java.io.File;
@@ -341,8 +344,14 @@ public class JarMain {
         },"shutdown-abort"));
 
         JsonServer jsonServer = new JsonServer(run,run.getDispatcher(),run.getCoordinator());
+        WebConsole webConsole = new WebConsole(run,run.getDispatcher(),run.getCoordinator());
 
         jsonServer.start();
+        try {
+            webConsole.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         long start = System.currentTimeMillis();
 
