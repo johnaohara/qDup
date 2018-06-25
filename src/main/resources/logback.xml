@@ -18,7 +18,7 @@
     <logger name="perf.qdup.Local" level="INFO"/>
     <logger name="perf.qdup.cmd.CommandDispatcher" level="INFO"/>
 
-    <root level="info">
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
     </root>
