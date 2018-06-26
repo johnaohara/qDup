@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import HelloWorld from './components/HelloWorld';
+import ConsoleApp from './components/ConsoleApp';
 
-ReactDOM.render(<HelloWorld />, document.getElementById('content'));
+ReactDOM.render(<ConsoleApp />, document.getElementById('content'));
 
 

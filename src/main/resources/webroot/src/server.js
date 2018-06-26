@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import HelloWorld from './components/HelloWorld';
+import ConsoleApp from './components/ConsoleApp';
 import express from 'express';
 
 let app = express();
@@ -14,7 +14,7 @@ app.use(express.static('public'));
 // GET /
 app.get('/', function (req, res) {
   res.render('layout', {
-    content: ReactDOMServer.renderToString(<HelloWorld />)
+    content: ReactDOMServer.renderToString(<ConsoleApp />)
   });
 });
 

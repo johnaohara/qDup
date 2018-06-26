@@ -22,16 +22,16 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var HelloWorld = function (_React$Component) {
-  _inherits(HelloWorld, _React$Component);
+var ConsoleApp = function (_React$Component) {
+  _inherits(ConsoleApp, _React$Component);
 
-  function HelloWorld() {
-    _classCallCheck(this, HelloWorld);
+  function ConsoleApp() {
+    _classCallCheck(this, ConsoleApp);
 
-    return _possibleConstructorReturn(this, (HelloWorld.__proto__ || Object.getPrototypeOf(HelloWorld)).apply(this, arguments));
+    return _possibleConstructorReturn(this, (ConsoleApp.__proto__ || Object.getPrototypeOf(ConsoleApp)).apply(this, arguments));
   }
 
-  _createClass(HelloWorld, [{
+  _createClass(ConsoleApp, [{
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
@@ -42,7 +42,7 @@ var HelloWorld = function (_React$Component) {
     }
   }]);
 
-  return HelloWorld;
+  return ConsoleApp;
 }(_react2.default.Component);
 
-exports.default = HelloWorld;
+exports.default = ConsoleApp;
