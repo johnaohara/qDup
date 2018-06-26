@@ -12,7 +12,7 @@ export default class ActiveOutput extends React.Component {
     }
 
     componentDidMount() {
-        fetch('http://test.perf:31338/active', {mode: 'cors'})
+        fetch('http://test.perf:31337/active', {mode: 'cors'})
             .then(results => {
                 return results.json();
             }).then(data => {

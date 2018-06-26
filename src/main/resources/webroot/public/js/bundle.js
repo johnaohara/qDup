@@ -59,7 +59,7 @@ var ActiveOutput = function (_React$Component) {
         value: function componentDidMount() {
             var _this2 = this;
 
-            fetch('http://test.perf:31338/active', { mode: 'cors' }).then(function (results) {
+            fetch('http://test.perf:31337/active', { mode: 'cors' }).then(function (results) {
                 return results.json();
             }).then(function (data) {
                 _this2.setState({ output: data[0].output, name: data[0].name });
