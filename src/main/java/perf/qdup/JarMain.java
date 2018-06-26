@@ -363,6 +363,7 @@ public class JarMain {
         System.out.println("Finished in "+ StringUtil.durationToString(stop-start)+" at "+run.getOutputPath());
 
         jsonServer.stop();
+        webConsole.stop();
 
         dispatcher.shutdown();
         executor.shutdownNow();

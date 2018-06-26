@@ -21,10 +21,13 @@ public class GuiVerticle extends AbstractVerticle {
         httpServer.requestHandler(createRouter()::accept);
         httpServer.listen(port, res2 -> {
             if (res2.failed()) {
-                future.fail(res2.cause());
+                if (!(res2.cause() instanceof IllegalStateException)) {
+                    future.fail(res2.cause());
+                }
+                // else do nothing, netty executor was not in state to accept tasks
             } else {
                 future.complete();
-                System.out.println("web gui listening on: http://" + host +":" + res2.result().actualPort() + "/");
+                System.out.println("web gui listening on: http://" + host + ":" + res2.result().actualPort() + "/");
             }
         });
     }
