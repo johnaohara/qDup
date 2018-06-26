@@ -10,7 +10,7 @@ import io.vertx.ext.web.handler.StaticHandler;
 
 public class GuiVerticle extends AbstractVerticle {
 
-    private static final int port = 31339;
+    private static final int port = 31338;
     private String host = "localhost";
     private HttpServer httpServer;
 
@@ -27,7 +27,11 @@ public class GuiVerticle extends AbstractVerticle {
                 // else do nothing, netty executor was not in state to accept tasks
             } else {
                 future.complete();
+                System.out.println("");
+                System.out.println("****************************");
                 System.out.println("web gui listening on: http://" + host + ":" + res2.result().actualPort() + "/");
+                System.out.println("****************************");
+                System.out.println("");
             }
         });
     }

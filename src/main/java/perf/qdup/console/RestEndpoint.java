@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response;
 
 
 @Path("/")
-public class StatsEndpoint {
+public class RestEndpoint {
 
     @GET
     @Path("/active")

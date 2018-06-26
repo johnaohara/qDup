@@ -5,10 +5,9 @@ import io.vertx.core.Future;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.jboss.resteasy.plugins.server.vertx.VertxRequestHandler;
 import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public class JsonVerticle extends AbstractVerticle {
-    private static final int port = 31338;
+    private static final int port = 31337;
 
     @Override
     public void start(Future<Void> future) {
@@ -19,7 +18,7 @@ public class JsonVerticle extends AbstractVerticle {
 
         VertxResteasyDeployment deployment = new VertxResteasyDeployment();
         deployment.start();
-        deployment.getRegistry().addPerInstanceResource(StatsEndpoint.class);
+        deployment.getRegistry().addPerInstanceResource(RestEndpoint.class);
         deployment.getProviderFactory().register(corsFilter);
 
         // Start the front end server using the Jax-RS controller
