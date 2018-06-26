@@ -8,9 +8,9 @@ var _server = require('react-dom/server');
 
 var _server2 = _interopRequireDefault(_server);
 
-var _HelloWorld = require('./components/HelloWorld');
+var _ConsoleApp = require('./components/ConsoleApp');
 
-var _HelloWorld2 = _interopRequireDefault(_HelloWorld);
+var _ConsoleApp2 = _interopRequireDefault(_ConsoleApp);
 
 var _express = require('express');
 
@@ -29,7 +29,7 @@ app.use(_express2.default.static('public'));
 // GET /
 app.get('/', function (req, res) {
   res.render('layout', {
-    content: _server2.default.renderToString(_react2.default.createElement(_HelloWorld2.default, null))
+    content: _server2.default.renderToString(_react2.default.createElement(_ConsoleApp2.default, null))
   });
 });
 

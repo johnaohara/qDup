@@ -18,6 +18,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var reactStringReplace = require('react-string-replace');
+
 var ActiveOutput = function (_React$Component) {
     _inherits(ActiveOutput, _React$Component);
 
@@ -27,7 +29,8 @@ var ActiveOutput = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (ActiveOutput.__proto__ || Object.getPrototypeOf(ActiveOutput)).call(this));
 
         _this.state = {
-            output: ''
+            output: '',
+            name: ''
         };
         return _this;
     }
@@ -37,11 +40,11 @@ var ActiveOutput = function (_React$Component) {
         value: function componentDidMount() {
             var _this2 = this;
 
-            fetch('http://test.perf:31338/active').then(function (results) {
+            fetch('http://test.perf:31338/active', { mode: 'cors' }).then(function (results) {
                 return results.json();
             }).then(function (data) {
-                _this2.setState({ output: data.output });
-                console.info(data.output);
+                _this2.setState({ output: data[0].output, name: data[0].name });
+                console.info(data[0].output);
             });
         }
     }, {
@@ -51,9 +54,24 @@ var ActiveOutput = function (_React$Component) {
                 'div',
                 { className: 'container' },
                 _react2.default.createElement(
+                    'h2',
+                    null,
+                    'Name'
+                ),
+                _react2.default.createElement(
                     'p',
                     null,
-                    this.state.output
+                    this.state.name
+                ),
+                _react2.default.createElement(
+                    'h2',
+                    null,
+                    'Output'
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'console' },
+                    _react2.default.createElement('p', { dangerouslySetInnerHTML: { __html: this.state.output.replace(/(?:\\[\r\n])/g, "<br>") } })
                 )
             );
         }

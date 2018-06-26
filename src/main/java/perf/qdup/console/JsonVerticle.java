@@ -2,17 +2,25 @@ package perf.qdup.console;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.jboss.resteasy.plugins.server.vertx.VertxRequestHandler;
 import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public class JsonVerticle extends AbstractVerticle {
     private static final int port = 31338;
 
     @Override
     public void start(Future<Void> future) {
+
+        CorsFilter corsFilter = new CorsFilter();
+        corsFilter.setAllowedMethods("GET, POST, PUT, DELETE, OPTIONS");
+        corsFilter.getAllowedOrigins().add("*");
+
         VertxResteasyDeployment deployment = new VertxResteasyDeployment();
         deployment.start();
         deployment.getRegistry().addPerInstanceResource(StatsEndpoint.class);
+        deployment.getProviderFactory().register(corsFilter);
 
         // Start the front end server using the Jax-RS controller
         vertx.createHttpServer()

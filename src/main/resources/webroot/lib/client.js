@@ -8,10 +8,10 @@ var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _HelloWorld = require('./components/HelloWorld');
+var _ConsoleApp = require('./components/ConsoleApp');
 
-var _HelloWorld2 = _interopRequireDefault(_HelloWorld);
+var _ConsoleApp2 = _interopRequireDefault(_ConsoleApp);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_reactDom2.default.render(_react2.default.createElement(_HelloWorld2.default, null), document.getElementById('content'));
+_reactDom2.default.render(_react2.default.createElement(_ConsoleApp2.default, null), document.getElementById('content'));
