@@ -90,7 +90,7 @@ var ActiveOutput = function (_React$Component) {
                 _react2.default.createElement(
                     'div',
                     { className: 'console' },
-                    _react2.default.createElement('p', { dangerouslySetInnerHTML: { __html: this.state.output.replace(/(?:\\[\r\n])/g, "<br>") } })
+                    _react2.default.createElement('p', { dangerouslySetInnerHTML: { __html: this.state.output.replace(/(?:\\[rn]|[\r\n])/g, "<br>") } })
                 )
             );
         }

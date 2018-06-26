@@ -27,7 +27,10 @@ public class JsonVerticle extends AbstractVerticle {
                 .requestHandler(new VertxRequestHandler(vertx, deployment))
                 .listen(this.port, ar -> {
                     if ( ar.failed()) {
-                        future.fail(ar.cause());
+                        if (!(ar.cause() instanceof IllegalStateException)) {
+                            future.fail(ar.cause());
+                        }
+                        // else do nothing, netty executor was not in state to accept tasks
                     }
                     else {
                         System.out.println("REST server started on port " + ar.result().actualPort());
