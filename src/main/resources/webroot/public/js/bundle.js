@@ -15,7 +15,7 @@ var _ConsoleApp2 = _interopRequireDefault(_ConsoleApp);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_reactDom2.default.render(_react2.default.createElement(_ConsoleApp2.default, null), document.getElementById('content'));
+_reactDom2.default.render(_react2.default.createElement(_ConsoleApp2.default, null), document.getElementById('app_content'));
 },{"./components/ConsoleApp":3,"react":186,"react-dom":56}],2:[function(require,module,exports){
 'use strict';
 
@@ -49,7 +49,8 @@ var ActiveOutput = function (_React$Component) {
 
         _this.state = {
             output: '',
-            name: ''
+            name: '',
+            host: ''
         };
         return _this;
     }
@@ -62,8 +63,8 @@ var ActiveOutput = function (_React$Component) {
             fetch('http://test.perf:31337/active', { mode: 'cors' }).then(function (results) {
                 return results.json();
             }).then(function (data) {
-                _this2.setState({ output: data[0].output, name: data[0].name });
-                console.info(data[0].output);
+                _this2.setState({ output: data[0].output, name: data[0].name, host: data[0].host });
+                // console.info(data[0].output);
             });
         }
     }, {
@@ -71,26 +72,135 @@ var ActiveOutput = function (_React$Component) {
         value: function render() {
             return _react2.default.createElement(
                 'div',
-                { className: 'container' },
-                _react2.default.createElement(
-                    'h2',
-                    null,
-                    'Name'
-                ),
-                _react2.default.createElement(
-                    'p',
-                    null,
-                    this.state.name
-                ),
-                _react2.default.createElement(
-                    'h2',
-                    null,
-                    'Output'
-                ),
+                { id: 'editor' },
                 _react2.default.createElement(
                     'div',
-                    { className: 'console' },
-                    _react2.default.createElement('p', { dangerouslySetInnerHTML: { __html: this.state.output.replace(/(?:\\[rn]|[\r\n])/g, "<br>") } })
+                    { className: 'panel-v', style: { width: "calc(100% - 0.5px)" } },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'panel-h panel', style: { height: "calc(10% - 0.5px)" } },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'windowLabelCont' },
+                            _react2.default.createElement(
+                                'a',
+                                { href: '#', className: 'windowLabel', 'data-panel': 'html', 'data-popover-trigger': 'html' },
+                                ' ',
+                                _react2.default.createElement(
+                                    'span',
+                                    {
+                                        className: 'label' },
+                                    'Active Command'
+                                ),
+                                _react2.default.createElement(
+                                    'svg',
+                                    { width: '8', height: '7', viewBox: '-0.019531 -52.792969 30.039062 25.195312' },
+                                    _react2.default.createElement('path', {
+                                        d: 'M29.941406 -52.500000C29.785156 -52.656250 29.589844 -52.753906 29.355469 -52.792969L0.644531 -52.792969C0.410156 -52.753906 0.214844 -52.656250 0.058594 -52.500000C-0.019531 -52.265625 0.000000 -52.050781 0.117188 -51.855469L14.472656 -27.890625C14.628906 -27.734375 14.804688 -27.636719 15.000000 -27.597656C15.234375 -27.636719 15.410156 -27.734375 15.527344 -27.890625L29.882812 -51.855469C30.000000 -52.089844 30.019531 -52.304688 29.941406 -52.500000ZM29.941406 -52.500000' })
+                                )
+                            )
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'CodeMirror cm-s-default CodeMirror-wrap' },
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'CodeMirror-scroll', tabIndex: '-1' },
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'CodeMirror-sizer',
+                                        style: {
+                                            marginLeft: "58px",
+                                            marginBottom: "-15px",
+                                            borderRightWidth: "15px",
+                                            minHeight: "72px",
+                                            paddingRight: "0px",
+                                            paddingBottom: "0px"
+                                        } },
+                                    _react2.default.createElement(
+                                        'div',
+                                        { style: { position: "relative", top: "0px" } },
+                                        _react2.default.createElement(
+                                            'div',
+                                            { className: 'CodeMirror-lines', role: 'presentation' },
+                                            'host:    ',
+                                            this.state.host,
+                                            _react2.default.createElement('br', null),
+                                            'command: ',
+                                            this.state.name
+                                        )
+                                    )
+                                ),
+                                _react2.default.createElement('div', {
+                                    style: {
+                                        position: "absolute",
+                                        height: "15px",
+                                        width: "1px",
+                                        borderBottom: "0px solid transparent",
+                                        top: "72px"
+                                    } })
+                            )
+                        )
+                    ),
+                    _react2.default.createElement('div', { className: 'gutter gutter-vertical', style: { height: "1px" } }),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'panel-h panel', style: { height: "calc(90% - 0.5px)" } },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'windowLabelCont' },
+                            _react2.default.createElement(
+                                'a',
+                                { href: '#', className: 'windowLabel', 'data-panel': 'html', 'data-popover-trigger': 'html' },
+                                ' ',
+                                _react2.default.createElement(
+                                    'span',
+                                    {
+                                        className: 'label' },
+                                    'Console Output'
+                                ),
+                                _react2.default.createElement(
+                                    'svg',
+                                    { width: '8', height: '7', viewBox: '-0.019531 -52.792969 30.039062 25.195312' },
+                                    _react2.default.createElement('path', {
+                                        d: 'M29.941406 -52.500000C29.785156 -52.656250 29.589844 -52.753906 29.355469 -52.792969L0.644531 -52.792969C0.410156 -52.753906 0.214844 -52.656250 0.058594 -52.500000C-0.019531 -52.265625 0.000000 -52.050781 0.117188 -51.855469L14.472656 -27.890625C14.628906 -27.734375 14.804688 -27.636719 15.000000 -27.597656C15.234375 -27.636719 15.410156 -27.734375 15.527344 -27.890625L29.882812 -51.855469C30.000000 -52.089844 30.019531 -52.304688 29.941406 -52.500000ZM29.941406 -52.500000' })
+                                )
+                            )
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'CodeMirror cm-s-default CodeMirror-wrap' },
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'CodeMirror-scroll', tabIndex: '-1' },
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'CodeMirror-sizer',
+                                        style: {
+                                            marginLeft: "58px",
+                                            marginBottom: "-15px",
+                                            borderRightWidth: "15px",
+                                            minHeight: "72px",
+                                            paddingRight: "0px",
+                                            paddingBottom: "0px"
+                                        } },
+                                    _react2.default.createElement(
+                                        'div',
+                                        { style: { position: "relative", top: "0px" } },
+                                        _react2.default.createElement('div', { className: 'CodeMirror-lines', role: 'presentation', dangerouslySetInnerHTML: { __html: this.state.output.replace(/(?:[\n])/g, "<br/>") } })
+                                    )
+                                ),
+                                _react2.default.createElement('div', {
+                                    style: {
+                                        position: "absolute",
+                                        height: "15px",
+                                        width: "1px",
+                                        borderBottom: "0px solid transparent",
+                                        top: "72px"
+                                    } })
+                            )
+                        )
+                    )
                 )
             );
         }
@@ -137,11 +247,7 @@ var ConsoleApp = function (_React$Component) {
   _createClass(ConsoleApp, [{
     key: 'render',
     value: function render() {
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(_ActiveOutput2.default, null)
-      );
+      return _react2.default.createElement(_ActiveOutput2.default, null);
     }
   }]);
 

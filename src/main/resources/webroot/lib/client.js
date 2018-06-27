@@ -14,4 +14,4 @@ var _ConsoleApp2 = _interopRequireDefault(_ConsoleApp);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_reactDom2.default.render(_react2.default.createElement(_ConsoleApp2.default, null), document.getElementById('content'));
+_reactDom2.default.render(_react2.default.createElement(_ConsoleApp2.default, null), document.getElementById('app_content'));

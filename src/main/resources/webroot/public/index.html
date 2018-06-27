@@ -3,15 +3,324 @@
 <head>
   <!-- Scripts and styles here -->
   <link rel="stylesheet" type="text/css" href="css/console.css">
+
+  <meta charset="utf-8">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0084ff">
+
+  <script>
+      window.NEXT_APP = true;
+
+      var EditorConfig = {
+          shell: false,
+          paths: {
+              favorite: "/_make_favourite/",
+              media: "/mooshellmedia/",
+              addResource: "/_add_external_resource/",
+              render: "//fiddle.jshell.net/57GtJ/63/show/"
+          },
+          values: {
+              html: "<pre id=\"input\"><\/pre>\n<hr>\n<pre id=\"output\"><\/pre>",
+              js: "var str = \"Hello\\r\\nhow are you\\r\\n\\r\\n0123456789\\r\\n0123456789\";\ndocument.getElementById(\"input\").innerHTML = JSON.stringify(str);\ndocument.getElementById(\"output\").innerHTML = JSON.stringify(str.replace(/(?:\\\\[rn]|[\\r\\n])/g, \"<br/>\"));\n",
+              css: ""
+          },
+          fiddle: {
+              id: "301485006",
+              slug: "57GtJ",
+              boilerplate: false,
+              // TODO: Missing
+              // {% if preload_resources %}
+              //   resources: {{ preload_resources|safe }}
+              // {% else %}
+              //   resources: []
+              // {% endif %}
+          },
+          panels: {
+              html: "html",
+              js: "javascript",
+              css: "css"
+          },
+          user: {
+              id: "None",
+              username: ""
+          },
+          showHelloBar: false
+      }
+  </script>
+
+
+
+  <link rel="icon" href="/favicon.png">
+
+  <title>qDup Web Console</title>
 </head>
-<body class="container">
+<body data-skeleton-url="/css/dist-skeleton-dark.css" class="gridMode_grid_1 fullyLoaded">
 
-<header>
-  <h1>qDup - web console</h1>
-</header>
 
-<section id="content"><%- content %></section>
 
+  <header>
+    <h1>
+      <span class="title">qDup Web console</span>
+      <div class="changelog-badge">
+        <a title="qDup Web Console" href="/">
+          <svg width="300px" height="150px" viewBox="0 0 300 150">
+            <g class="asd" stroke-width="1.6" fill="none" fill-rule="evenodd">
+              <path id="svg_1"
+                    d="m33.837289,68.120111c4.8233,8.308046 5.764929,10.831084 4.170172,11.173722c-3.11525,0.669334 -2.489235,4.49736 1.871078,11.441462c5.4683,8.708668 16.179024,14.056584 26.239694,13.101609c3.904971,-0.37067 8.319715,-1.135639 9.81054,-1.699957c1.490818,-0.564325 0.575994,0.486949 -2.032946,2.336146c-13.05142,9.250733 -29.170501,8.606343 -42.030025,-1.680212c-5.127334,-4.101457 -12.181749,-16.084775 -12.181749,-20.693131c0,-1.305516 -1.16303,-2.57051 -2.584508,-2.811083c-2.324663,-0.393431 -2.012473,-1.429348 3.105167,-10.303583c3.129325,-5.426402 6.075067,-10.255422 6.546098,-10.731153c0.471039,-0.475731 3.659952,3.964047 7.086481,9.866179l-0.000003,0.000002zm41.460414,16.01689c-4.823302,-8.308044 -5.764929,-10.831091 -4.17018,-11.173722c3.11525,-0.669323 2.489237,-4.497357 -1.87107,-11.441462c-5.468302,-8.708671 -16.179037,-14.056586 -26.239702,-13.101613c-3.904971,0.370665 -8.319707,1.135649 -9.81053,1.699969c-1.490826,0.564313 -0.575999,-0.486956 2.032941,-2.33615c13.051422,-9.250737 29.170503,-8.606352 42.030028,1.680217c5.127336,4.101443 12.181746,16.08477 12.181746,20.693117c0,1.305526 1.163041,2.57051 2.584503,2.811083c2.324673,0.393438 2.012475,1.429348 -3.105156,10.303588c-3.129322,5.426395 -6.075072,10.255417 -6.546098,10.731153c-0.471041,0.475731 -3.659952,-3.964042 -7.086481,-9.866177l0,-0.000002z"
+                    stroke-width="1.5" stroke="#fff" fill="#fff"/>
+              <text xml:space="preserve" text-anchor="start" font-family="Oswald, sans-serif" font-size="100" id="svg_2" y="105" x="120" fill-opacity="null" stroke-opacity="null" stroke-width="0" stroke="#fff" fill="#ffffff">Dup</text>
+              <line stroke="#fff" stroke-linecap="null" stroke-linejoin="null" id="svg_3" y2="102.714029"
+                    x2="110.286052" y1="41.000296" x1="110.286052" fill-opacity="null"
+                    stroke-opacity="null" stroke-width="6" fill="none"/>
+            </g>
+          </svg>
+        </a>
+      </div>
+    </h1>
+    <div id="actions">
+      <nav class="actionCont collapsed">
+        <div class="actionItem">
+          <a class="aiButton" id="active" title="Shortcut: Command/Ctrl + A" href="#active">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"
+                 class="feather feather-play">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Active</a>
+        </div>
+
+        <div class="actionItem">
+          <a class="aiButton" id="latches" title="Shortcut: Command/Ctrl + L" href="#latches">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"
+                 class="feather feather-upload-cloud">
+              <polyline points="16 16 12 12 8 16"></polyline>
+              <line x1="12" y1="12" x2="12" y2="21"></line>
+              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+              <polyline points="16 16 12 12 8 16"></polyline>
+            </svg>
+            Latches</a>
+        </div>
+
+        <div class="actionItem visible ">
+          <a class="aiButton" id="counters" title="Shortcut: Command/Ctrl + C" href="#counters">
+            <svg width="48" height="24" viewBox="0 0 48 24" fill="none" stroke="currentColor"
+                 stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"
+                 class="feather feather-upload-cloud">
+              <text style="cursor: move;" xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="14" id="svg_1" y="16.84375" x="2.601563" stroke-width="0" stroke="#FFF" fill="#FFFFF">0 0 0 1</text>
+              <line id="svg_2" y2="0" x2="0" y1="0" x1="48" stroke="#FFF" fill="none"/>
+              <line id="svg_3" y2="0" x2="0" y1="24" x1="0" stroke="#FFF" fill="none"/>
+              <line id="svg_5" y2="24" x2="0" y1="24" x1="48" fill-opacity="null" stroke-opacity="null"
+                    stroke-width="null" stroke="#FFF" fill="none"/>
+              <line id="svg_7" y2="0" x2="48" y1="24" x1="48" fill-opacity="null" stroke-opacity="null"
+                    stroke-width="null" stroke="#FFF" fill="none"/>
+              <line id="svg_8" y2="24" x2="12" y1="0" x1="12" fill-opacity="null" stroke-opacity="null"
+                    stroke-width="null" stroke="#FFF" fill="none"/>
+              <line id="svg_9" y2="24" x2="24" y1="0" x1="24" fill-opacity="null" stroke-opacity="null"
+                    stroke-width="null" stroke="#FFF" fill="none"/>
+              <line id="svg_10" y2="24" x2="36" y1="0" x1="36" fill-opacity="null" stroke-opacity="null"
+                    stroke-width="null" stroke="#FFF" fill="none"/>
+            </svg>
+
+            Counters</a>
+        </div>
+
+        <div class="actionItem visible">
+          <a class="aiButton" id="pendingDownloads" title="Fork into a new fiddle" href="#pending">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"
+                 class="feather feather-upload-cloud">
+              <line x1="12" y1="12" x2="12" y2="21"></line>
+              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+
+              <polyline points="16 16 12 21 8 16"></polyline>
+            </svg>
+            Pending Downloads</a>
+        </div>
+
+
+    </div>
+
+    <!-- <div class="dropdownCont center hidden" data-popover-ref="export">
+      <div class="dcWrapper menu">
+        <ul>
+          <li><a id="export-gist" href="#">Export to Gist</a> <a id="gist-link" class="hidden" href="#" target="_blank">See Gist</a></li>
+        </ul>
+      </div>
+    </div> -->
+
+    <div class="dropdownCont center hidden" data-popover-ref="embed"
+         style="position: absolute; left: 80px; top: 66px;">
+      <div class="dcWrapper embed">
+
+        <div id="creator">
+          <section>
+            <h3>Tabs:</h3>
+            <div class="inlineFields">
+              <label class="inputCont_checkbox checkboxCont">
+                <input type="checkbox" name="tabs" value="js" checked="">
+                <span class="checkbox"><i class="bts bt-check"></i></span> JavaScript
+              </label>
+              <label class="inputCont_checkbox checkboxCont">
+                <input type="checkbox" name="tabs" value="html" checked="">
+                <span class="checkbox"><i class="bts bt-check"></i></span> HTML
+              </label>
+              <label class="inputCont_checkbox checkboxCont">
+                <input type="checkbox" name="tabs" value="css" checked="">
+                <span class="checkbox"><i class="bts bt-check"></i></span> CSS
+              </label>
+              <label class="inputCont_checkbox checkboxCont">
+                <input type="checkbox" name="tabs" value="result" checked="">
+                <span class="checkbox"><i class="bts bt-check"></i></span> Result
+              </label>
+            </div> <!-- /inlineFields -->
+          </section>
+
+          <section class="noborder">
+            <h3>Visual:</h3>
+            <div class="inlineFields">
+              <label class="inputCont_checkbox checkboxCont">
+                <input type="radio" name="skin" value="light" checked="">
+                <span class="radio"></span> Light
+              </label>
+              <label class="inputCont_checkbox checkboxCont">
+                <input type="radio" name="skin" value="dark">
+                <span class="radio"></span> Dark
+              </label>
+            </div> <!-- /inlineFields -->
+            <label class="inputCont_text">
+              <input type="text" name="accentColor" maxlength="7" placeholder="Accent color">
+            </label>
+            <label class="inputCont_text">
+              <input type="text" name="fontColor" maxlength="7" placeholder="Font color">
+            </label>
+            <label class="inputCont_text">
+              <input type="text" name="menuColor" maxlength="7" placeholder="Menu background">
+            </label>
+            <label class="inputCont_text">
+              <input type="text" name="bodyColor" maxlength="7" placeholder="Code background">
+            </label>
+          </section>
+
+          <section class="noborder">
+            <h3>
+              Embed snippet
+              <a href="#" class="codeTypeToggle">Prefer iframe?</a>:
+            </h3>
+            <div class="embedCodeWrap">
+<textarea class="embedCode" id="share_embedded_dropdown" data-view="embed"
+          data-pattern-value="<script async src=&quot;{embedSrc}&quot;></script>">&lt;script async src="{embedSrc}"&gt;&lt;/script&gt;
+</textarea>
+            </div> <!-- /embedCodeWrap -->
+
+            <div class="embedCodeWrap hidden">
+<textarea class="embedCode" data-view="embedded"
+          data-pattern-value="<iframe width=&quot;100%&quot; height=&quot;300&quot; src=&quot;{embedSrc}&quot; allowfullscreen=&quot;allowfullscreen&quot; allowpaymentrequest frameborder=&quot;0&quot;></iframe>">&lt;iframe width="100%" height="300" src="{embedSrc}" allowfullscreen allowpaymentrequest frameborder="0"&gt;&lt;/iframe&gt;
+</textarea>
+              <p><strong>No autoresizing</strong> to fit the code</p>
+              <p><strong>Render blocking</strong> of the parent page</p>
+            </div> <!-- /embedCodeWrap -->
+          </section>
+        </div> <!-- /creator -->
+
+        <div id="preview">
+          <iframe width="100%" height="300" frameborder="0"
+                  sandbox="allow-modals allow-forms allow-scripts allow-same-origin allow-popups"
+                  allow="midi; geolocation; microphone; camera; encrypted-media;"
+                  src="//jsfiddle.net/sc52d1ko/1/embedded/"></iframe>
+        </div> <!-- /preview -->
+      </div> <!-- /dcWrapper -->
+    </div> <!-- /dropdownCont -->
+
+    <div id="progressbar" class=" ">
+      <div class="pb"></div>
+    </div>
+  </header>
+
+  <div id="sidebar">
+    <section id="s-cont">
+
+
+      <script type="text/javascript">
+          var resources = []
+      </script>
+
+      <div class="sidebarItem">
+        <h3 class="toggler ">
+          870:script: run-all-benchmarks
+        </h3>
+
+      </div> <!-- /sidebarItem -->
+
+      <div class="sidebarItem">
+        <h3 class="toggler">
+          871:script: async-profiler
+        </h3>
+
+      </div> <!-- /sidebarItem -->
+
+
+      <style media="screen">
+        .maintainers {
+          position: absolute;
+          top: -900em;
+          left: -900em;
+        }
+      </style>
+
+
+    </section>
+  </div>
+  <div id="content">
+    <input type="hidden" id="id_version" name="version" value="0">
+    <input type="hidden" id="id_slug" name="slug" value="sc52d1ko">
+
+    <section id="app_content" style="width: 100%; height: calc(100vh - 60px);"></section>
+
+  </div>
+
+<script>
+    window.addEventListener("DOMContentLoaded", function () {
+        var loadEditor = function () {
+            var csrfToken = Cookie.read("csrftoken")
+
+            Layout.skin = "light"
+
+            $extend(Layout, new Events())
+
+            Actions = new EditorActions({
+                example_id: EditorConfig.fiddle.id,
+                exampleURL: "//jsfiddle.net/57GtJ/63/",
+                exampleSaveUrl: "/_save/",
+                loadDependenciesURL: "/_get_dependencies/{lib_id}/",
+            })
+
+            Layout.render()
+
+
+            // all fully loaded
+            document.body.classList.add("fullyLoaded")
+        }
+
+        var themeHref = "/css/dist-editor-dark.css"
+
+        var script = document.createElement("script")
+        script.onload = loadEditor
+
+        var styleEditor = document.createElement("link")
+        styleEditor.rel = "stylesheet"
+        styleEditor.type = "text/css"
+        styleEditor.id = "editor-theme"
+        styleEditor.href = themeHref
+        styleEditor.onload = function () {
+            document.body.appendChild(script)
+        }
+        document.body.appendChild(styleEditor)
+    })
+</script>
 <!-- Include our bundled JS -->
 <script src="./js/bundle.js"></script>
 </body>
