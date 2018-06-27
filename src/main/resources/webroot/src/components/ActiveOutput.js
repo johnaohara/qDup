@@ -27,7 +27,7 @@ export default class ActiveOutput extends React.Component {
                 return results.json();
             }).then(data => {
             this.setState({output: data[0].output, name: data[0].name, host: data[0].host});
-            console.info(data[0].output);
+            // console.info(data[0].output);
         })
     }
 
