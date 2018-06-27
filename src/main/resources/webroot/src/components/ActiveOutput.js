@@ -13,12 +13,21 @@ export default class ActiveOutput extends React.Component {
     }
 
     componentDidMount() {
+        this.timer = setInterval(()=> this.getActiveCommands(), 1000);
+
+    }
+
+    componentWillUnmount() {
+        this.timer = null;
+    }
+
+    getActiveCommands() {
         fetch('http://test.perf:31337/active', {mode: 'cors'})
             .then(results => {
                 return results.json();
             }).then(data => {
             this.setState({output: data[0].output, name: data[0].name, host: data[0].host});
-            // console.info(data[0].output);
+            console.info(data[0].output);
         })
     }
 

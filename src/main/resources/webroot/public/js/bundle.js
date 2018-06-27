@@ -60,11 +60,25 @@ var ActiveOutput = function (_React$Component) {
         value: function componentDidMount() {
             var _this2 = this;
 
+            this.timer = setInterval(function () {
+                return _this2.getActiveCommands();
+            }, 1000);
+        }
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {
+            this.timer = null;
+        }
+    }, {
+        key: 'getActiveCommands',
+        value: function getActiveCommands() {
+            var _this3 = this;
+
             fetch('http://test.perf:31337/active', { mode: 'cors' }).then(function (results) {
                 return results.json();
             }).then(function (data) {
-                _this2.setState({ output: data[0].output, name: data[0].name, host: data[0].host });
-                // console.info(data[0].output);
+                _this3.setState({ output: data[0].output, name: data[0].name, host: data[0].host });
+                console.info(data[0].output);
             });
         }
     }, {
