@@ -2,6 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ConsoleApp from './components/ConsoleApp';
 
-ReactDOM.render(<ConsoleApp />, document.getElementById('content'));
+ReactDOM.render(<ConsoleApp />, document.getElementById('app_content'));
 
 

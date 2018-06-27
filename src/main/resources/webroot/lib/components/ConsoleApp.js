@@ -34,11 +34,7 @@ var ConsoleApp = function (_React$Component) {
   _createClass(ConsoleApp, [{
     key: 'render',
     value: function render() {
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(_ActiveOutput2.default, null)
-      );
+      return _react2.default.createElement(_ActiveOutput2.default, null);
     }
   }]);
 
