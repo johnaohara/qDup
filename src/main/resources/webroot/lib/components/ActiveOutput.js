@@ -33,6 +33,7 @@ var ActiveOutput = function (_React$Component) {
             name: '',
             host: ''
         };
+        _this.getActiveCommands = _this.getActiveCommands.bind(_this);
         return _this;
     }
 
@@ -55,11 +56,18 @@ var ActiveOutput = function (_React$Component) {
         value: function getActiveCommands() {
             var _this3 = this;
 
-            fetch('http://test.perf:31337/active', { mode: 'cors' }).then(function (results) {
-                return results.json();
+            fetch('http://test.perf:31337/active', { mode: 'cors' }).then(function (response) {
+                if (!response.ok) {
+                    _this3.setState({ output: '', name: '', host: '' });
+                    throw Error(response.statusText);
+                }
+                return response.json();
             }).then(function (data) {
                 _this3.setState({ output: data[0].output, name: data[0].name, host: data[0].host });
-                console.info(data[0].output);
+                // console.info(data[0].output);
+            }).catch(function (error) {
+                console.log(error);
+                this.setState({ output: '', name: '', host: '' });
             });
         }
     }, {
@@ -118,7 +126,7 @@ var ActiveOutput = function (_React$Component) {
                                         _react2.default.createElement(
                                             'div',
                                             { className: 'CodeMirror-lines', role: 'presentation' },
-                                            'host:    ',
+                                            'host: ',
                                             this.state.host,
                                             _react2.default.createElement('br', null),
                                             'command: ',
@@ -182,7 +190,8 @@ var ActiveOutput = function (_React$Component) {
                                     _react2.default.createElement(
                                         'div',
                                         { style: { position: "relative", top: "0px" } },
-                                        _react2.default.createElement('div', { className: 'CodeMirror-lines', role: 'presentation', dangerouslySetInnerHTML: { __html: this.state.output.replace(/(?:[\n])/g, "<br/>") } })
+                                        _react2.default.createElement('div', { className: 'CodeMirror-lines', role: 'presentation',
+                                            dangerouslySetInnerHTML: { __html: this.state.output.replace(/(?:[\n])/g, "<br/>") } })
                                     )
                                 ),
                                 _react2.default.createElement('div', {

@@ -39,3 +39,7 @@ jar {
                 'Main-Class': 'perf.qdup.JarMain'
     }
 }
+
+task webpack(type: Exec) {
+    commandLine "$projectDir/src/main/resources/webroot/node_modules/.bin/webpack", "src/client.js", "$projectDir/src/main/resources/webroot/public/js/bundle.js"
+}
