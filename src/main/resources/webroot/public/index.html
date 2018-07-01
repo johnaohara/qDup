@@ -31,12 +31,6 @@
               id: "301485006",
               slug: "57GtJ",
               boilerplate: false,
-              // TODO: Missing
-              // {% if preload_resources %}
-              //   resources: {{ preload_resources|safe }}
-              // {% else %}
-              //   resources: []
-              // {% endif %}
           },
           panels: {
               html: "html",
@@ -60,52 +54,9 @@
 <body data-skeleton-url="/css/dist-skeleton-dark.css" class="gridMode_grid_1 fullyLoaded">
 
 
-
-  <header id="qdup_header">
-
-  </header>
-
-  <div id="sidebar">
-    <section id="s-cont">
+<div id="app"><% - content %></div>
 
 
-      <script type="text/javascript">
-          var resources = []
-      </script>
-
-      <div class="sidebarItem">
-        <h3 class="toggler ">
-          870:script: run-all-benchmarks
-        </h3>
-
-      </div> <!-- /sidebarItem -->
-
-      <div class="sidebarItem">
-        <h3 class="toggler">
-          871:script: async-profiler
-        </h3>
-
-      </div> <!-- /sidebarItem -->
-
-
-      <style media="screen">
-        .maintainers {
-          position: absolute;
-          top: -900em;
-          left: -900em;
-        }
-      </style>
-
-
-    </section>
-  </div>
-  <div id="content">
-    <input type="hidden" id="id_version" name="version" value="0">
-    <input type="hidden" id="id_slug" name="slug" value="sc52d1ko">
-
-    <section id="app_content" style="width: 100%; height: calc(100vh - 60px);"></section>
-
-  </div>
 
 <script>
     window.addEventListener("DOMContentLoaded", function () {
