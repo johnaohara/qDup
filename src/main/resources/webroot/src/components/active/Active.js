@@ -1,49 +1,27 @@
 import React from 'react';
 import Active_sidebar from "./Active_sidebar";
 import Active_content from "./Active_content";
+import BaseService from "../base/BaseService";
 
-export default class Active extends React.Component {
+export default class Active extends BaseService {
     constructor() {
-        super();
+        super('http://test.perf:31337/active');
         this.state = {
             scripts: [],
             output: '',
             name: '',
             host: ''
         };
-        this.getActiveCommands = this.getActiveCommands.bind(this);
+        this.callRemoteUrl = this.callRemoteUrl.bind(this);
     }
 
-    componentDidMount() {
-        this.timer = setInterval(() => this.getActiveCommands(), 1000);
-
-    }
-
-    componentWillUnmount() {
-        this.timer = null;
-    }
-
-    getActiveCommands() {
-        fetch('http://test.perf:31337/active', {mode: 'cors'})
-            .then(response => {
-                if (!response.ok) {
-                    this.setState({scripts: [], output: '', name: '', host: ''});
-                    throw Error(response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                this.setState({
-                    scripts: this.getScriptNames(data),
-                    output: data[0].output,
-                    name: data[0].name,
-                    host: data[0].host
-                });
-                // console.info(data[0].output);
-            }).catch(function (error) {
-            console.log(error);
-            this.setState({scripts: [], output: '', name: '', host: ''});
-        })
+    updateState(data) {
+        this.setState({
+            scripts: this.getScriptNames(data),
+            output: data[0].output,
+            name: data[0].name,
+            host: data[0].host
+        });
     }
 
     getScriptNames(json) {

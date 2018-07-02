@@ -3,7 +3,6 @@ import React from 'react';
 export default class Active_content extends React.Component {
     constructor() {
         super();
-
     }
 
     render() {

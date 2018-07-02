@@ -41,7 +41,7 @@ var ActiveOutput = function (_React$Component) {
             var _this2 = this;
 
             this.timer = setInterval(function () {
-                return _this2.getActiveCommands();
+                return _this2.getLatches();
             }, 1000);
         }
     }, {
@@ -50,7 +50,7 @@ var ActiveOutput = function (_React$Component) {
             this.timer = null;
         }
     }, {
-        key: 'getActiveCommands',
+        key: 'getLatches',
         value: function getActiveCommands() {
             var _this3 = this;
 

@@ -10,7 +10,7 @@ export default class Active_sidebar extends React.Component {
         var numrows = this.props.scripts.length;
 
         for (var i = 0; i < numrows; i++) {
-            rows.push(<div className="sidebarItem">
+            rows.push(<div className="sidebarItem" key={'sidebarItem_' + i}>
                 <h3 className="toggler">
                     <a href="#">
                         {this.props.scripts[i].script.split(':')[1] + " (" + this.props.scripts[i].script.split(':')[2] + ")"}
