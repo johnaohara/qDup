@@ -5,7 +5,7 @@ import Latches_content_item from "./Latches_content_item";
 
 export default class Latches extends BaseService {
     constructor() {
-        super('http://test.perf:31337/latches');
+        super('latches');
         this.state = {
             latches: []
         };

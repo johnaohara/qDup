@@ -7,7 +7,7 @@ import BaseService from "../base/BaseService";
 
 export default class Downloads extends BaseService {
     constructor() {
-        super('http://test.perf:31337/pendingDownloads');
+        super('pendingDownloads');
         this.state = {
             downloads: []
         };

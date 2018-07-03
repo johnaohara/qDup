@@ -2,9 +2,10 @@ import React from "react";
 
 
 export default class BaseService extends React.Component {
-    constructor(remoteUrl) {
+    constructor(remoteEndpoint) {
         super();
-        this.remoteUrl = remoteUrl;
+        this.remoteUrl = 'http://test.perf:31337/'; //TODO:  populate dynamic
+        this.remoteEndpoint = remoteEndpoint;
         this.getActiveCommands = this.callRemoteUrl.bind(this);
         this.callRemoteUrl;
     }
@@ -19,7 +20,7 @@ export default class BaseService extends React.Component {
     }
 
     callRemoteUrl() {
-        fetch(this.remoteUrl, {mode: 'cors'}) //TODO: set url from props
+        fetch(this.remoteUrl + this.remoteEndpoint, {mode: 'cors'}) //TODO: set url from props
             .then(response => {
                 if (!response.ok) {
                     throw Error(response.statusText);

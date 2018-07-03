@@ -5,7 +5,7 @@ import BaseService from "../base/BaseService";
 
 export default class Active extends BaseService {
     constructor() {
-        super('http://test.perf:31337/active');
+        super('active');
         this.state = {
             scripts: [],
             output: '',

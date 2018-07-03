@@ -4,7 +4,7 @@ import Counters_content from "./Counters_content";
 
 export default class Counters extends BaseService {
     constructor() {
-        super('http://test.perf:31337/counters');
+        super('counters');
         this.state = {
             counters: []
         };
