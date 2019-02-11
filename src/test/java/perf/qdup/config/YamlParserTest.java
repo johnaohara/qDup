@@ -851,4 +851,83 @@ public class YamlParserTest extends SshTestBase {
         validateParse(parser);
     }
 
+    @Test
+    public void stringLiteralScriptParameters(){
+        YamlParser parser = new YamlParser();
+        parser.load("stringLiteral.yaml",
+                stream(
+                        "cleanup-scripts:",
+                                "  - gather-artifacts:",
+                                "      with:",
+                                "        SERVICE: insurance",
+                                "        SERVICE_REGEX: \"[i]nsurance\"",
+                                "  - gather-artifacts:",
+                                "      with:",
+                                "        SERVICE: broker",
+                                "        SERVICE_REGEX: \"[b]roker\"",
+                                "  - gather-artifacts:",
+                                "      with:",
+                                "        SERVICE: vehicle",
+                                "        SERVICE_REGEX: \"[v]ehicle\""
+                )
+        );
+
+        parser.load("unquotedStringLiteral.yaml",
+                stream(
+                        "cleanup-scripts:",
+                        "  - gather-artifacts:",
+                        "      with:",
+                        "        SERVICE: insurance",
+                        "        SERVICE_REGEX: [i]nsurance",
+                        "  - gather-artifacts:",
+                        "      with:",
+                        "        SERVICE: broker",
+                        "        SERVICE_REGEX: [b]roker",
+                        "  - gather-artifacts:",
+                        "      with:",
+                        "        SERVICE: vehicle",
+                        "        SERVICE_REGEX: [v]ehicle"
+                )
+        );
+
+
+        parser.load("escapedStringLiteral.yaml",
+                stream(
+                        "cleanup-scripts:",
+                        "  - gather-artifacts:",
+                        "      with:",
+                        "        SERVICE: insurance",
+                        "        SERVICE_REGEX: \\[i\\]nsurance",
+                        "  - gather-artifacts:",
+                        "      with:",
+                        "        SERVICE: broker",
+                        "        SERVICE_REGEX: \\[b\\]roker",
+                        "  - gather-artifacts:",
+                        "      with:",
+                        "        SERVICE: vehicle",
+                        "        SERVICE_REGEX: \\[v\\]ehicle"
+                )
+        );
+
+
+        validateParse(parser);
+
+        Json stringLiteralJson = parser.getJson("stringLiteral.yaml");
+        Json unQuotedStringJson = parser.getJson("unquotedStringLiteral.yaml");
+        Json escapedStringJson = parser.getJson("escapedStringLiteral.yaml");
+
+        assertEquals(1,stringLiteralJson.size());
+        assertEquals(1,escapedStringJson.size());
+        assertEquals(1,unQuotedStringJson.size());
+
+        Json stringLiteralFirst = stringLiteralJson.getJson(0);
+        Json escapedStringFirst = escapedStringJson.getJson(0);
+        Json unQuotedStringFirst = unQuotedStringJson.getJson(0);
+
+        assertEquals(3,((Json) stringLiteralFirst.get("child")).size());
+        assertEquals(3,((Json) escapedStringFirst.get("child")).size());
+        assertEquals(3,((Json) unQuotedStringFirst.get("child")).size());
+
+    }
+
 }
