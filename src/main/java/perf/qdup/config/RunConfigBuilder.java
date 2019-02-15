@@ -8,7 +8,6 @@ import perf.qdup.cmd.Cmd;
 import perf.qdup.cmd.CommandSummary;
 import perf.qdup.cmd.Script;
 import perf.qdup.cmd.impl.ScriptCmd;
-import perf.yaup.AsciiArt;
 import perf.yaup.HashedLists;
 import perf.yaup.HashedSets;
 import perf.yaup.json.Json;
@@ -16,8 +15,6 @@ import perf.yaup.json.Json;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -406,10 +403,10 @@ public class RunConfigBuilder {
         target.put(role,cmd);
     }
 
-    public void forceRunState(String key,String value){
+    public void forceRunState(String key,Object value){
         state.set(key,value);
     }
-    public void setRunState(String key,String value){
+    public void setRunState(String key,Object value){
         if(!state.has(key)){
             state.set(key, value);
         } else {
