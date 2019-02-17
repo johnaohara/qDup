@@ -21,12 +21,17 @@ public class ReadState extends Cmd {
     @Override
     public void run(String input, Context context) {
         //use getStateValue in case it is in WITH or context
-        Object value = Cmd.getStateValue(key,this,context.getState(),null);
-        populatedKey = value == null ? "" : value.toString();
-        if(populatedKey == null || populatedKey.isEmpty()){
-            context.skip(input);
-        } else {
-            context.next(populatedKey);
+        try {
+            Object value = Cmd.getStateValue(key, this, context.getState(), null);
+            populatedKey = value == null ? "" : value.toString();
+            if (populatedKey == null || populatedKey.isEmpty()) {
+                context.skip(input);
+            } else {
+                context.next(populatedKey);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            System.exit(0);
         }
     }
 

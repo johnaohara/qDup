@@ -288,20 +288,20 @@ public abstract class Cmd {
     }
 
 
-    private boolean hasWith(String name){
+    protected boolean hasWith(String name){
         boolean hasIt = false;
         Cmd target = this;
         while(!hasIt && target!=null){
-            hasIt = name.startsWith("$") ? Json.find(target.with,name)!=null : with.has(name);
+            hasIt = target.with.has(name) || Json.find(target.with,name.startsWith("?") ? name : "$."+name)!=null;
             target = target.parent;
         }
         return hasIt;
     }
-    private Object getWith(String name){
+    protected Object getWith(String name){
         Object value = null;
         Cmd target = this;
         while(value==null && target!=null){
-            value = name.startsWith("$") ? Json.find(target.with,name) : target.with.get(name);
+            value = target.with.has(name) ? target.with.get(name) : Json.find(target.with,name.startsWith("?") ? name : "$."+name);
             target = target.parent;
         }
         return value;
@@ -338,13 +338,15 @@ public abstract class Cmd {
                 }while( (targeetRef=targeetRef.getParent())!=null && rtrn==null);
             }
             if (rtrn == null && state!=null){
-                rtrn = state.get(currentName).toString();
+                Object val = state.get(currentName);
+                rtrn = val == null ? null : val.toString();
+                //rtrn = state.get(currentName).toString();
             }
         }while (rtrn!=null && (currentName=rtrn).contains(STATE_PREFIX));
         return rtrn;
     }
     public static String populateStateVariables(String command,Cmd cmd, State state,boolean replaceUndefined) {
-        return populateStateVariables(command,cmd,state,replaceUndefined,null);
+        return populateStateVariables(command,cmd,state,replaceUndefined,new Ref(cmd));
     }
     public static String populateStateVariables(String command,Cmd cmd, State state,boolean replaceUndefined,Ref ref){
         String rtrn = command;

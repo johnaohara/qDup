@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * Created by wreicher
@@ -144,19 +143,21 @@ public class FilteredStream extends MultiStream{
                         filtered = false;
                         int dropLength = 0;
                         String matchedName = "";
-
-                        for(String name : filters.keySet()){
+                        Set<String> filterNames = new HashSet<>(filters.keySet());
+                        for(String name : filterNames){
                             byte[] filter = filters.get(name);
-                            int prefixLength = prefixLength(buffered, filter, currentIndex, writeIndex-currentIndex);
-                            if(prefixLength == filter.length) {//full match
-                                if(filter.length>dropLength){
-                                    dropLength=filter.length;
-                                    filtered=true;
-                                    matchedName = name;
-                                }
-                            }else if (prefixLength > 0) {
-                                if(trailingPrefixIndex > currentIndex){
-                                    trailingPrefixIndex = currentIndex;
+                            if(filter!=null){
+                                int prefixLength = prefixLength(buffered, filter, currentIndex, writeIndex-currentIndex);
+                                if(prefixLength == filter.length) {//full match
+                                    if(filter.length>dropLength){
+                                        dropLength=filter.length;
+                                        filtered=true;
+                                        matchedName = name;
+                                    }
+                                }else if (prefixLength > 0) {
+                                    if(trailingPrefixIndex > currentIndex){
+                                        trailingPrefixIndex = currentIndex;
+                                    }
                                 }
                             }
                         }
