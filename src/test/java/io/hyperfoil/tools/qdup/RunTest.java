@@ -246,6 +246,49 @@ public class RunTest extends SshTestBase {
    }
 
    @Test
+   public void array_state_with_watch_in_yaml(){
+      Parser parser = Parser.getInstance();
+      RunConfigBuilder builder = getBuilder();
+      builder.loadYaml(parser.loadFile("",stream(""+
+                      "scripts:",
+              "  foo:",
+              "  - sh: echo 'Starting!'",
+              "  - for-each: OBJ ${{OBJS}}",
+              "    then:",
+              "      - sh: echo something has started",
+              "        watch:",
+              "          - regex: started",
+              "            then:",
+              "             - signal: ${{OBJ.name}}-started",
+              "  - sh: echo 'End!'",
+              "hosts:",
+              "  local: " + getHost(),
+              "roles:",
+              "  doit:",
+              "    hosts: [local]",
+              "    run-scripts: [foo]",
+              "states:",
+              "  OBJS: [{'name': 'one', 'value':'two'}]"
+      ),false));
+      RunConfig config = builder.buildConfig();
+      assertFalse("runConfig errors:\n" + config.getErrors().stream().collect(Collectors.joining("\n")), config.hasErrors());
+      Dispatcher dispatcher = new Dispatcher();
+
+      Run doit = new Run(tmpDir.toString(), config, dispatcher);
+      doit.run();
+
+      String logContents = readFile(tmpDir.getPath().resolve("run.log"));
+      assertTrue("run log is empty", logContents.length() > 0);
+      Boolean containsUnsubstituted = logContents.contains("signal: ${{OBJ.name}}-started");
+      assertTrue("File contains ${{OBJ.name}}-started", !containsUnsubstituted);
+
+
+
+   }
+
+
+
+   @Test
    public void signal_in_previous_stage() {
       Parser parser = Parser.getInstance();
       RunConfigBuilder builder = getBuilder();
