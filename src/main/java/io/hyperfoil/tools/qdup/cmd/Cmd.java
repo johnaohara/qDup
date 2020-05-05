@@ -53,13 +53,25 @@ public abstract class Cmd {
    public static class Ref {
       private Ref parent;
       private Cmd command;
+      private Cmd stateCommand;
 
       public Ref(Cmd command) {
          this.command = command;
+         this.stateCommand = command;
+      }
+
+      public Ref(Cmd command, Cmd stateCommand) {
+         this.command = command;
+         this.stateCommand = stateCommand;
       }
 
       public Ref add(Cmd command) {
-         Ref rtrn = new Ref(command);
+         Ref rtrn = new Ref(command, command);
+         rtrn.parent = this;
+         return rtrn;
+      }
+      public Ref add(Cmd command, Cmd stateCommand) {
+         Ref rtrn = new Ref(command, stateCommand);
          rtrn.parent = this;
          return rtrn;
       }
@@ -75,8 +87,10 @@ public abstract class Cmd {
       public Cmd getCommand() {
          return command;
       }
+      public Cmd getStateCommand() {
+         return stateCommand;
+      }
    }
-
 
    public static class NO_OP extends Cmd {
       @Override
@@ -255,7 +269,7 @@ public abstract class Cmd {
       Cmd target = this;
       while (!hasIt && target != null) {
          hasIt = target.withActive.has(name) || Json.find(target.withActive, name.startsWith("$") ? name : "$." + name) != null;
-         target = target.parent;
+         target = target.stateParent;
       }
       return hasIt;
    }
@@ -265,7 +279,7 @@ public abstract class Cmd {
       Cmd target = this;
       while (value == null && target != null) {
          value = target.withActive.has(name) ? target.withActive.get(name) : Json.find(target.withActive, name.startsWith("$") ? name : "$." + name);
-         target = target.parent;
+         target = target.stateParent;
       }
       return value;
    }
@@ -324,6 +338,7 @@ public abstract class Cmd {
    private String patternJavascriptPrefix = StringUtil.PATTERN_JAVASCRIPT_PREFIX;
 
    private Cmd parent;
+   private Cmd stateParent;
 
    int uid;
    protected boolean silent = false;
@@ -342,6 +357,7 @@ public abstract class Cmd {
       this.timers = new HashedLists<>();
       this.onSignal = new HashedLists<>();
       this.parent = null;
+      this.stateParent = null;
       this.uid = uidGenerator.incrementAndGet();
    }
 
@@ -544,6 +560,7 @@ public abstract class Cmd {
    public Cmd getParent(){return parent;}
    public void setParent(Cmd command){
       this.parent = command;
+      this.stateParent = command;
    }
 
 
@@ -610,7 +627,7 @@ public abstract class Cmd {
    }
 
    public Cmd watch(Cmd command) {
-      //command.parent = this;
+      command.stateParent = this;
       this.watchers.add(command);
       return this;
    }
