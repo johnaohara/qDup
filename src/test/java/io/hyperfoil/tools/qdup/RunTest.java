@@ -308,6 +308,62 @@ public class RunTest extends SshTestBase {
 
 
    @Test
+   public void array_state_with_watch_and_waits_in_yaml(){
+      Parser parser = Parser.getInstance();
+      RunConfigBuilder builder = getBuilder();
+      builder.loadYaml(parser.loadFile("",stream(""+
+                      "scripts:",
+              "  setSignals:",
+              "  - for-each: OBJ ${{OBJS}}",
+              "    then:",
+              "    - set-signal: ${{OBJ.name}}-started 1",
+              "  foo:",
+              "  - sh: echo 'Starting!'",
+              "  - for-each: OBJ ${{OBJS}}",
+              "    then:",
+              "      - sh: echo ${{OBJ.name}}-started",
+              "        watch:",
+              "          - regex: started",
+              "            then:",
+              "             - signal: ${{OBJ.name}}-started",
+              "      - sleep: 2s",
+              "  - sh: echo 'End!'",
+              "  bar:",
+              "  - for-each: OBJ ${{OBJS}}",
+              "    then:",
+              "    - wait-for: ${{OBJ.name}}-started-started",
+              "    - sh: 'echo ${{OBJ.name}}-started has started!'",
+              "hosts:",
+              "  local: " + getHost(),
+              "roles:",
+              "  doit:",
+              "    hosts: [local]",
+              "    setup-scripts: [setSignals]",
+              "    run-scripts: [foo, bar]",
+              "states:",
+              "  OBJS: [{'name': 'one', 'value':'foo'}, {'name': 'two', 'value':'bar'}, {'name': 'three', 'value':'biz'}]"
+      ),false));
+      RunConfig config = builder.buildConfig();
+
+      assertFalse("runConfig errors:\n" + config.getErrors().stream().collect(Collectors.joining("\n")), config.hasErrors());
+
+
+      Dispatcher dispatcher = new Dispatcher();
+      Run doit = new Run(tmpDir.toString(), config, dispatcher);
+      doit.run();
+
+      String logContents = readFile(tmpDir.getPath().resolve("run.log"));
+      assertTrue("run log is empty", logContents.length() > 0);
+      Boolean containsUnsubstituted = logContents.contains("signal: ${{OBJ.name}}-started");
+      assertTrue("File contains ${{OBJ.name}}-started", !containsUnsubstituted);
+
+
+
+   }
+
+
+
+   @Test
    public void signal_in_previous_stage() {
       Parser parser = Parser.getInstance();
       RunConfigBuilder builder = getBuilder();
