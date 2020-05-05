@@ -252,7 +252,7 @@ public class RunTest extends SshTestBase {
       RunConfigBuilder builder = getBuilder();
       builder.loadYaml(parser.loadFile("",stream(""+
                       "scripts:",
-              "  defineSignals:",
+              "  setSignals:",
               "  - for-each: OBJ ${{OBJS}}",
               "    then:",
               "    - set-signal: ${{OBJ.name}}-started 1",
@@ -263,8 +263,8 @@ public class RunTest extends SshTestBase {
               "      - sh: echo something has started",
               "        watch:",
               "          - regex: started",
-//              "            then:",
-//              "             - signal: ${{OBJ.name}}-started",
+              "            then:",
+              "             - signal: ${{OBJ.name}}-started",
               "  - sh: echo 'End!'",
               "  bar:",
               "  - for-each: OBJ ${{OBJS}}",
@@ -277,7 +277,7 @@ public class RunTest extends SshTestBase {
               "roles:",
               "  doit:",
               "    hosts: [local]",
-              "    setup-scripts: [defineSignals]",
+              "    setup-scripts: [setSignals]",
               "    run-scripts: [foo, bar]",
               "states:",
               "  OBJS: [{'name': 'one', 'value':'two'}]"
@@ -298,12 +298,8 @@ public class RunTest extends SshTestBase {
 
       String logContents = readFile(tmpDir.getPath().resolve("run.log"));
       assertTrue("run log is empty", logContents.length() > 0);
-
       Boolean containsUnsubstituted = logContents.contains("signal: ${{OBJ.name}}-started");
       assertTrue("File contains ${{OBJ.name}}-started", !containsUnsubstituted);
-
-      Boolean containsLatchError = logContents.contains("one-started-started missing latch");
-      assertTrue("one-started-started missing latch", !containsLatchError);
 
 
 
