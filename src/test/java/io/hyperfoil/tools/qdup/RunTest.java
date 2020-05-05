@@ -252,6 +252,10 @@ public class RunTest extends SshTestBase {
       RunConfigBuilder builder = getBuilder();
       builder.loadYaml(parser.loadFile("",stream(""+
                       "scripts:",
+              "  setSignals:",
+              "  - for-each: OBJ ${{OBJS}}",
+              "    then:",
+              "    - set-signal: ${{OBJ.name}}-started 1",
               "  foo:",
               "  - sh: echo 'Starting!'",
               "  - for-each: OBJ ${{OBJS}}",
@@ -262,12 +266,19 @@ public class RunTest extends SshTestBase {
               "            then:",
               "             - signal: ${{OBJ.name}}-started",
               "  - sh: echo 'End!'",
+              "  bar:",
+              "  - for-each: OBJ ${{OBJS}}",
+              "    then:",
+              "    - sh: 'echo wait for ${{OBJ.name}}-started'",
+              "    - wait-for: ${{OBJ.name}}-started-started",
+              "    - sh: 'echo ${{OBJ.name}}-started has started!'",
               "hosts:",
               "  local: " + getHost(),
               "roles:",
               "  doit:",
               "    hosts: [local]",
-              "    run-scripts: [foo]",
+              "    setup-scripts: [setSignals]",
+              "    run-scripts: [foo, bar]",
               "states:",
               "  OBJS: [{'name': 'one', 'value':'two'}]"
       ),false));
