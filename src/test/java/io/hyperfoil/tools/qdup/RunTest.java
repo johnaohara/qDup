@@ -8,6 +8,7 @@ import io.hyperfoil.tools.qdup.cmd.Result;
 import io.hyperfoil.tools.qdup.cmd.Script;
 import io.hyperfoil.tools.qdup.cmd.impl.CtrlSignal;
 import io.hyperfoil.tools.qdup.cmd.impl.ReadState;
+import io.hyperfoil.tools.qdup.cmd.impl.Sh;
 import io.hyperfoil.tools.qdup.config.RunConfig;
 import io.hyperfoil.tools.qdup.config.RunConfigBuilder;
 import io.hyperfoil.tools.qdup.config.waml.WamlParser;
@@ -271,9 +272,16 @@ public class RunTest extends SshTestBase {
               "  OBJS: [{'name': 'one', 'value':'two'}]"
       ),false));
       RunConfig config = builder.buildConfig();
-      assertFalse("runConfig errors:\n" + config.getErrors().stream().collect(Collectors.joining("\n")), config.hasErrors());
-      Dispatcher dispatcher = new Dispatcher();
 
+      assertFalse("runConfig errors:\n" + config.getErrors().stream().collect(Collectors.joining("\n")), config.hasErrors());
+
+      Script foo = config.getScript("foo");
+
+      assertTrue("Script should contain 3 top level commands", foo.getThens().size() == 3 );
+      assertTrue("Last command should be a Sh cmd", foo.getLastThen() instanceof Sh);
+      assertTrue("Last command should not have any thens", foo.getLastThen().hasThens() == false);
+
+      Dispatcher dispatcher = new Dispatcher();
       Run doit = new Run(tmpDir.toString(), config, dispatcher);
       doit.run();
 
