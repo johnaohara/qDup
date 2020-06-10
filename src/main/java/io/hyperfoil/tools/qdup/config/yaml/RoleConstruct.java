@@ -2,6 +2,7 @@ package io.hyperfoil.tools.qdup.config.yaml;
 
 import io.hyperfoil.tools.qdup.Host;
 import io.hyperfoil.tools.qdup.cmd.impl.ScriptCmd;
+import io.hyperfoil.tools.qdup.config.ContainerConfiguration;
 import io.hyperfoil.tools.qdup.config.HostExpression;
 import io.hyperfoil.tools.qdup.config.Role;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
 public class RoleConstruct extends DeferableConstruct {
@@ -27,10 +29,47 @@ public class RoleConstruct extends DeferableConstruct {
         }else{
             rtrn.put("hosts",role.getHostRefs());
         }
+        rtrn.put("container-image",role.getContainerConfiguration());
         rtrn.put("setup-scripts",role.getSetup());
         rtrn.put("run-scripts",role.getRun());
         rtrn.put("cleanup-scripts",role.getCleanup());
         return rtrn;
+    };
+
+    BiFunction<String,Node, ContainerConfiguration> parseContainerConfiguration = (section, tupleValue)-> {
+        AtomicReference<String> image = new AtomicReference<>(null);
+        AtomicReference<String> container = new AtomicReference<>(null);
+        if(tupleValue instanceof SequenceNode){
+            ((SequenceNode) tupleValue).getValue().forEach( node -> {
+                if( node instanceof MappingNode){
+                    ((MappingNode) node).getValue().forEach( tuple -> {
+                        String key = ((ScalarNode)tuple.getKeyNode()).getValue();
+                        Node value = tuple.getValueNode();
+                        if( value instanceof ScalarNode) {
+                            switch (key) {
+                                case "image":
+                                    image.set(((ScalarNode) value).getValue());
+                                    break;
+                                case "name":
+                                    container.set(((ScalarNode) value).getValue());
+                                    break;
+                                default:
+                                    throw new YAMLException("Unknown Key: " + key);
+                            }
+                        } else {
+                            throw new YAMLException("Should be scalar node: " + key);
+                        }
+                    });
+                } else {
+                    throw new YAMLException("Expecting a mapping");
+                }
+            });
+
+        } else {
+            throw new YAMLException("Expecting a sequence");
+        }
+        ContainerConfiguration containerConfiguration = new ContainerConfiguration(image.get(), container.get());
+        return containerConfiguration;
     };
 
     ScriptCmdConstruct scriptCmdConstruct = new ScriptCmdConstruct();
@@ -84,6 +123,9 @@ public class RoleConstruct extends DeferableConstruct {
                             }else{
                                 throw new YAMLException("role '"+role.getName()+"' hosts must be a sequence"+tupleValue.getStartMark());
                             }
+                            break;
+                        case "container":
+                            role.setContainerConfiguration(parseContainerConfiguration.apply("container",tupleValue));
                             break;
                         case "run-scripts":
                             parseScript.apply("run-scripts",tupleValue).forEach(role::addRun);

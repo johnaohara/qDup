@@ -11,6 +11,7 @@ public class Role {
 
     private String name;
     private HostExpression hostExpression;
+    private ContainerConfiguration containerConfig;
     private Set<String> hostRefs;
     private List<Host> hosts;
     private Map<Host,Env> environments;
@@ -24,6 +25,7 @@ public class Role {
     public Role(String name){
         this.name = name;
         this.hostExpression=null;
+        this.containerConfig = null;
         this.hostRefs = new HashSet<>();
         this.hosts = new ArrayList<>();
         this.setup = new ArrayList<>();
@@ -36,6 +38,12 @@ public class Role {
         this.hostExpression = expression;
     }
     public HostExpression getHostExpression(){return hostExpression;}
+
+    public boolean hasContainerConfiguration(){ return containerConfig !=null;}
+    public void setContainerConfiguration(ContainerConfiguration expression){
+        this.containerConfig = expression;
+    }
+    public ContainerConfiguration getContainerConfiguration(){return containerConfig;}
 
     public boolean hasEnvironment(Host host){
         return environments.containsKey(host);

@@ -555,6 +555,7 @@ public class Run implements Runnable, DispatchObserver {
         logger.debug("{}.queueRunScripts",this);
 
         List<Callable<Boolean>> connectSessions = new LinkedList<>();
+        List<Callable<Boolean>> baseSessions = new LinkedList<>();
 
         Role allRole = config.getRole(RunConfigBuilder.ALL_ROLE);
         for(String roleName : config.getRoleNames()){
@@ -570,41 +571,48 @@ public class Run implements Runnable, DispatchObserver {
                             env.merge(allRole.getEnv(host));
                         }
                         String setupCommand = env.getDiff().getCommand();
-                        connectSessions.add(() -> {
-                            String name = script.getName() + "@" + host.getShortHostName();
-                            timer.start("connect:" + host.toString());
-                            SshSession session = new SshSession(
-                                    host,
-                                    config.getKnownHosts(),
-                                    config.getIdentity(),
-                                    config.getPassphrase(),
-                                    config.getTimeout(),
-                                    setupCommand,
-                                    getDispatcher().getScheduler(),
-                                    isTrace(name)
+                        if (!role.hasContainerConfiguration()) {
+                            //this role is running on bare metal
+                            connectSessions.add(() -> {
+                                String name = script.getName() + "@" + host.getShortHostName();
+                                timer.start("connect:" + host.toString());
+                                SshSession session = new SshSession(
+                                        host,
+                                        config.getKnownHosts(),
+                                        config.getIdentity(),
+                                        config.getPassphrase(),
+                                        config.getTimeout(),
+                                        setupCommand,
+                                        getDispatcher().getScheduler(),
+                                        isTrace(name)
 
-                            );
-                            session.setName(name);
-                            if (session.isConnected()) {
-                                //session.setDelay(SuffixStream.NO_DELAY);
-                                timer.start("context:" + host.toString());
-                                ScriptContext scriptContext = new ScriptContext(
-                                        session,
-                                        scriptState,
-                                        this,
-                                        timer,
-                                        script
                                 );
+                                session.setName(name);
+                                if (session.isConnected()) {
+                                    //session.setDelay(SuffixStream.NO_DELAY);
+                                    timer.start("context:" + host.toString());
+                                    ScriptContext scriptContext = new ScriptContext(
+                                            session,
+                                            scriptState,
+                                            this,
+                                            timer,
+                                            script
+                                    );
 
-                                getDispatcher().addScriptContext(scriptContext);
-                                boolean rtrn = session.isOpen();
-                                timer.start("waiting for start");
-                                return rtrn;
-                            } else {
-                                session.close();
-                                return false;
-                            }
-                        });
+                                    getDispatcher().addScriptContext(scriptContext);
+                                    boolean rtrn = session.isOpen();
+                                    timer.start("waiting for start");
+                                    return rtrn;
+                                } else {
+                                    session.close();
+                                    return false;
+                                }
+                            });
+                        } else {
+                            //this role is running in a container on the target host
+                            //TODO:: start the container and connect to sshd running on the container
+                            throw new RuntimeException("This mode is not yet supported");
+                        }
                     }
                 }
             }

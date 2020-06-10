@@ -72,6 +72,7 @@ public class RunConfigBuilder {
    private HashMap<String, Script> scripts;
 
    private HashedSets<String, String> roleHosts;
+   private HashedSets<String, ContainerConfiguration> roleContainerConfig;
    private HashedLists<String, ScriptCmd> roleSetup;
    private HashedLists<String, ScriptCmd> roleRun;
    private HashedLists<String, ScriptCmd> roleCleanup;
@@ -98,6 +99,7 @@ public class RunConfigBuilder {
       scripts = new LinkedHashMap<>();
       state = new State(State.RUN_PREFIX);
       roleHosts = new HashedSets<>();
+      roleContainerConfig = new HashedSets<>();
       roleSetup = new HashedLists<>();
       roleRun = new HashedLists<>();
       roleCleanup = new HashedLists<>();
@@ -194,6 +196,7 @@ public class RunConfigBuilder {
          role.getHostRefs().forEach(hostRef -> {
             addHostToRole(name, hostRef);
          });
+         addContainerConfigToRole(name, role.getContainerConfiguration());
          role.getSetup().forEach(cmd -> {
             addRoleSetup(name, ((ScriptCmd) cmd).getName(), cmd.getWith());
          });
@@ -442,6 +445,7 @@ public class RunConfigBuilder {
          if (roleHostExpression.containsKey(roleName)) {
             role.setHostExpression(new HostExpression(roleHostExpression.get(roleName)));
          }
+         getRoleContainer(roleName).forEach(role::setContainerConfiguration);
          getRoleHosts(roleName).forEach(role::addHostRef);
          getRoleSetup(roleName).forEach(role::addSetup);
          getRoleRun(roleName).forEach(role::addRun);
@@ -483,6 +487,10 @@ public class RunConfigBuilder {
       return roleHosts.has(name) ? roleHosts.get(name) : Collections.emptySet();
    }
 
+   private Set<ContainerConfiguration> getRoleContainer(String name) {
+      return roleContainerConfig.has(name) ? roleContainerConfig.get(name) : Collections.emptySet();
+   }
+
    public void setTimeout(int timeout) {
       this.timeout = timeout;
    }
@@ -517,6 +525,9 @@ public class RunConfigBuilder {
 
    public void addHostToRole(String name, String hostReference) {
       roleHosts.put(name, hostReference);
+   }
+   public void addContainerConfigToRole(String name, ContainerConfiguration container) {
+      roleContainerConfig.put(name, container);
    }
 
    public void addHostAlias(String alias, String host) {
@@ -725,6 +736,17 @@ public class RunConfigBuilder {
 
          });
       });
+
+      roleContainerConfig.forEach((roleName, containerConfig) -> {
+         if (!containerConfig.isEmpty()) {
+            if (!roles.containsKey(roleName)) {
+               //TODO add error if a role has a setup script but not a host
+            } else {
+               containerConfig.forEach(image -> roles.get(roleName).setContainerConfiguration(image));
+            }
+         }
+      });
+
       roleSetup.forEach((roleName, cmds) -> {
          if (!cmds.isEmpty()) {
             if (!roles.containsKey(roleName)) {
