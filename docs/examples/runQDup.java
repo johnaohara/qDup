@@ -72,6 +72,17 @@ class runQDup {
 
         String[] qDupArgs = ArrayUtils.addAll(qDupBaseArgs, args);
 
+        try {
+            String qDupDebug = System.getProperty("qDupDebug");
+
+            if(qDupDebug != null) {
+                ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+                root.setLevel(ch.qos.logback.classic.Level.ALL);
+            }
+        } catch (Exception e){
+            //ignore for now
+        }
+
         JarMain.main(qDupArgs);
     }
 
