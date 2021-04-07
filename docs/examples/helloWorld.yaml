@@ -3,7 +3,7 @@ scripts:
     - sh: echo ${{GREETING}}
 
 hosts:
-  local : ${{USER}}@${{HOST}}
+  local : ${{USER}}@localhost
 roles:
   run-hello-qdup:
     hosts:
