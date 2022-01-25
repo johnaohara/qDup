@@ -120,11 +120,13 @@ public class DebugServer implements RunObserver, ContextObserver {
         router.route("/").produces("application/json").handler(rc->{
             Json rtrn = new Json();
             rtrn.set("GET /breakpoints","current set breakpoints");
+            rtrn.set("DEL /breakpoints","delete all breakpoints");
             rtrn.set("GET /start","start run with debug enabled");
             rtrn.set("GET /resume","resume run after breakpoint has been hit");
             rtrn.set("POST /breakpoint/:line","set breakpoint by line number");
-            rtrn.set("GET /state/:stateVariable","get value of stateVariable");
-            rtrn.set("GET /expression/:expression","evaluate state expression");
+            rtrn.set("DEL /breakpoint/:line","delete breakpoint by line number");
+//            rtrn.set("GET /state/:stateVariable","get value of stateVariable");
+//            rtrn.set("GET /expression/:expression","evaluate state expression");
 
             rc.response().end(rtrn.toString(2));
         });
@@ -132,6 +134,14 @@ public class DebugServer implements RunObserver, ContextObserver {
             Json rtrn = new Json();
             if(this.run!=null){
                 rtrn.set("breakpoints", breakpoints.stream().collect(Collectors.toList()));
+            }
+            rc.response().end(rtrn.toString(2));
+        });
+        router.delete("/breakpoints").produces("application/json").handler(rc->{
+            Json rtrn = new Json();
+            if(this.run!=null){
+                breakpoints.clear();
+                rtrn.set("result","OK");
             }
             rc.response().end(rtrn.toString(2));
         });
@@ -164,7 +174,20 @@ public class DebugServer implements RunObserver, ContextObserver {
             }
 
         });
+        router.delete("/breakpoint/:line").handler(rc->{
 
+            String lineNumber = rc.request().getParam("line");
+
+            if(lineNumber != null) {
+                logger.info("Setting debug breakpoint at line: " + lineNumber);
+                List<Integer> clearBreakpoints = breakpoints.stream().filter(line -> line.equals(Integer.parseInt(lineNumber))).collect(Collectors.toList());
+                breakpoints.retainAll(clearBreakpoints);
+                rc.response().end("ok");
+            } else {
+                rc.response().setStatusCode(400).end("missing line number");
+            }
+
+        });
         int foundPort = getPort(port);
         try {
             logger.info("listening at {}:{}", InetAddress.getLocalHost().getHostName()
