@@ -2,6 +2,13 @@ scripts:
   hello-qdup:
     - sh: echo ${{GREETING}}
 
+  another-script:
+    - sh: echo ${{RUN.COUNTER}}
+    - set-state: RUN.COUNTER 2
+    - sh: echo ${{RUN.COUNTER}}
+    - set-state: RUN.COUNTER 3
+    - sh: echo ${{RUN.COUNTER}}
+
 hosts:
   local : ${{USER}}@${{HOST}}
 roles:
@@ -10,7 +17,9 @@ roles:
       - local
     run-scripts:
       - hello-qdup
+      - another-script
 states:
+  COUNTER: 1
   GREETING: Hello qDup!
   USER:
   HOST:

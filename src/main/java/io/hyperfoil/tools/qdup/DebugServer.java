@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Phaser;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class DebugServer implements RunObserver, ContextObserver {
@@ -41,19 +42,22 @@ public class DebugServer implements RunObserver, ContextObserver {
     private Coordinator coordinator;
 
     private final Phaser resumePhaser = new Phaser(1);
+    private final AtomicReference<Context> contextAtomicReference = new AtomicReference<>();
 
     private List<Integer> breakpoints = new ArrayList<>();
 
-    public DebugServer(Run run){
-        this(run,DEFAULT_PORT);
+    public DebugServer(Run run) {
+        this(run, DEFAULT_PORT);
     }
-    public DebugServer(Run run, int port){
+
+    public DebugServer(Run run, int port) {
         this.port = port;
         this.vertx = Vertx.vertx();
         setRun(run);
     }
-    public void setRun(Run run){
-        if(run!=null) {
+
+    public void setRun(Run run) {
+        if (run != null) {
             this.run = run;
             this.dispatcher = run.getDispatcher();
             this.coordinator = run.getCoordinator();
@@ -62,110 +66,125 @@ public class DebugServer implements RunObserver, ContextObserver {
         }
     }
 
-    private String filter(Object o){
-       if(o!=null && run!=null){
-          String rtrn = run.getConfig().getState().getSecretFilter().filter(o.toString());
-          return rtrn;
-       }
-       return "";
+    private String filter(Object o) {
+        if (o != null && run != null) {
+            String rtrn = run.getConfig().getState().getSecretFilter().filter(o.toString());
+            return rtrn;
+        }
+        return "";
     }
 
     @Override
-    public void preStart(Context context, Cmd command){
-        if(breakpoints.size() > 0) {
+    public void preStart(Context context, Cmd command) {
+        if (breakpoints.size() > 0) {
             Optional<Integer> optionalBreakpoint = breakpoints.stream().filter(line -> line.equals(command.getSourceLineNumber())).findFirst();
-            if(optionalBreakpoint.isPresent()){ //breakpoint is set
+            if (optionalBreakpoint.isPresent()) { //breakpoint is set
                 resumePhaser.register();
                 logger.info("Breakpoint hit on line: " + optionalBreakpoint.get());
+                contextAtomicReference.set(context);
                 resumePhaser.arriveAndAwaitAdvance();
+                contextAtomicReference.set(null);
                 resumePhaser.arriveAndDeregister();
             }
         }
     }
+
     @Override
-    public void preStop(Context context,Cmd command,String output){
+    public void preStop(Context context, Cmd command, String output) {
         System.out.println("preStop: " + command.getClass().getName());
     }
+
     @Override
-    public void preStage(Stage stage){
+    public void preStage(Stage stage) {
         System.out.println("preStage: " + stage.getClass().getName());
     }
+
     @Override
-    public void postStage(Stage stage){
+    public void postStage(Stage stage) {
         System.out.println("postStage: " + stage.getClass().getName());
     }
 
-    public int getPort(int startingPort){
-       int currentPort = startingPort > 0 && startingPort < 65535 ? startingPort : 31337;
-       boolean available = true;
-       do {
-          try (ServerSocket ss = new ServerSocket(currentPort) ; DatagramSocket ds = new DatagramSocket(currentPort)){
-             ss.setReuseAddress(true);
-             ds.setReuseAddress(true);
-             available = true;
-          } catch (IOException e) {
-             available = false;
-             currentPort++;
-          }
-       }while (!available && currentPort < 65535);
-       return currentPort;
+    public int getPort(int startingPort) {
+        int currentPort = startingPort > 0 && startingPort < 65535 ? startingPort : 31337;
+        boolean available = true;
+        do {
+            try (ServerSocket ss = new ServerSocket(currentPort); DatagramSocket ds = new DatagramSocket(currentPort)) {
+                ss.setReuseAddress(true);
+                ds.setReuseAddress(true);
+                available = true;
+            } catch (IOException e) {
+                available = false;
+                currentPort++;
+            }
+        } while (!available && currentPort < 65535);
+        return currentPort;
     }
 
-    public void start(){
+    public void start() {
 
         server = vertx.createHttpServer();
 
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
-        router.route("/").produces("application/json").handler(rc->{
+        router.route("/").produces("application/json").handler(rc -> {
             Json rtrn = new Json();
-            rtrn.set("GET /breakpoints","current set breakpoints");
-            rtrn.set("DEL /breakpoints","delete all breakpoints");
-            rtrn.set("GET /start","start run with debug enabled");
-            rtrn.set("GET /resume","resume run after breakpoint has been hit");
-            rtrn.set("POST /breakpoint/:line","set breakpoint by line number");
-            rtrn.set("DEL /breakpoint/:line","delete breakpoint by line number");
-//            rtrn.set("GET /state/:stateVariable","get value of stateVariable");
+            rtrn.set("GET /breakpoints", "current set breakpoints");
+            rtrn.set("DEL /breakpoints", "delete all breakpoints");
+            rtrn.set("GET /start", "start run with debug enabled");
+            rtrn.set("GET /resume", "resume run after breakpoint has been hit");
+            rtrn.set("POST /breakpoint/:line", "set breakpoint by line number");
+            rtrn.set("DEL /breakpoint/:line", "delete breakpoint by line number");
+            rtrn.set("GET /state/:stateVariable", "get value of stateVariable");
 //            rtrn.set("GET /expression/:expression","evaluate state expression");
 
             rc.response().end(rtrn.toString(2));
         });
-        router.route("/breakpoints").produces("application/json").handler(rc->{
+        router.route("/breakpoints").produces("application/json").handler(rc -> {
             Json rtrn = new Json();
-            if(this.run!=null){
+            if (this.run != null) {
                 rtrn.set("breakpoints", breakpoints.stream().collect(Collectors.toList()));
             }
             rc.response().end(rtrn.toString(2));
         });
-        router.delete("/breakpoints").produces("application/json").handler(rc->{
+        router.delete("/breakpoints").produces("application/json").handler(rc -> {
             Json rtrn = new Json();
-            if(this.run!=null){
+            if (this.run != null) {
                 breakpoints.clear();
-                rtrn.set("result","OK");
+                rtrn.set("result", "OK");
             }
             rc.response().end(rtrn.toString(2));
         });
-        router.route("/start").produces("application/json").handler(rc->{
+        router.route("/start").produces("application/json").handler(rc -> {
             Json rtrn = new Json();
-            if(this.run!=null){
+            if (this.run != null) {
                 this.run.startDebugRun();
-                rtrn.set("result","OK");
+                rtrn.set("result", "OK");
             }
             rc.response().end(rtrn.toString(2));
         });
-        router.route("/resume").produces("application/json").handler(rc->{
+        router.route("/resume").produces("application/json").handler(rc -> {
             Json rtrn = new Json();
-            if(this.run!=null){
+            if (this.run != null) {
                 resumePhaser.arriveAndAwaitAdvance();
-                rtrn.set("result","OK");
+                rtrn.set("result", "OK");
             }
             rc.response().end(rtrn.toString(2));
         });
-        router.post("/breakpoint/:line").handler(rc->{
+        router.route("/state/:stateVariable").produces("application/json").handler(rc -> {
+            String stateName = rc.request().getParam("stateVariable");
+            Json rtrn = new Json();
+            Context context = contextAtomicReference.get();
+            if (this.run != null && context != null) {
+                String populatedState = Cmd.populateStateVariables(stateName, context.getCurrentCmd(), context);
+                rtrn.set("result", populatedState);
+            }
+            rc.response().end(rtrn.toString(2));
+        });
+        router.post("/breakpoint/:line").handler(rc -> {
 
             String lineNumber = rc.request().getParam("line");
 
-            if(lineNumber != null) {
+            if (lineNumber != null) {
                 logger.info("Setting debug breakpoint at line: " + lineNumber);
                 breakpoints.add(Integer.parseInt(lineNumber));
                 rc.response().end("ok");
@@ -174,11 +193,11 @@ public class DebugServer implements RunObserver, ContextObserver {
             }
 
         });
-        router.delete("/breakpoint/:line").handler(rc->{
+        router.delete("/breakpoint/:line").handler(rc -> {
 
             String lineNumber = rc.request().getParam("line");
 
-            if(lineNumber != null) {
+            if (lineNumber != null) {
                 logger.info("Setting debug breakpoint at line: " + lineNumber);
                 List<Integer> clearBreakpoints = breakpoints.stream().filter(line -> line.equals(Integer.parseInt(lineNumber))).collect(Collectors.toList());
                 breakpoints.retainAll(clearBreakpoints);
@@ -191,7 +210,7 @@ public class DebugServer implements RunObserver, ContextObserver {
         int foundPort = getPort(port);
         try {
             logger.info("listening at {}:{}", InetAddress.getLocalHost().getHostName()
-                    ,foundPort);
+                    , foundPort);
         } catch (UnknownHostException e) {
             logger.info("listening at localhost:{}", foundPort);
         }
@@ -200,13 +219,12 @@ public class DebugServer implements RunObserver, ContextObserver {
 
     }
 
-    public void stop(){
-        if(server!=null){
+    public void stop() {
+        if (server != null) {
             server.close();
         }
         vertx.close();
     }
-
 
 
 }
