@@ -13,3 +13,49 @@ qDup.jar starts a JSON server with the below endpoints at hostname:31337
 * `/counter` - GET the current value for each counter
 * `/waiter` - GET the waiting commands for all signal names
 * `/pendingDownloads` - what files are queued for download from which hosts
+
+= Dynamic Debugging
+
+A Dynamic debug agent is started when qdup is passed the `-d` or `--debug` flag on the command line.
+
+A debug controller will be started at hostname:21337
+
+* `/breakpoints` - GET current set breakpoints
+* `/breakpoints` - DEL clear all breakpoints
+* `/start` - GET start qDup script running
+* `/resume` - GET resume run after breakpoint has been hit and execution has been paused
+* `/breakpoint/:line` - POST to set breakpoint line number
+* `/breakpoint/:line` - DEL to clear breakpoint by line number
+
+`$ java -jar qdup.jar --debug -b /tmp/qdupTest ./docs/examples/helloWorld.yaml --trace localhost -S USER=johara -S HOST=localhost`
+
+Execution will pause until;
+
+`13:05:41.440 [main] INFO  io.hyperfoil.tools.qdup.Run - Waiting for debugger to connect`
+
+== Using the debugger;
+
+To set breakpoints;
+
+`$ curl -s -X POST http://localhost:21337/breakpoint/10`
+
+`$ curl -s -X POST http://localhost:21337/breakpoint/3`
+
+To see list of breakpoints;
+
+`$ curl -s http://localhost:21337/breakpoints`
+
+To start qDup running;
+
+`$ curl -s http://localhost:21337/start`
+
+When a breakpoint is hit, execution of that script will pause;
+
+`13:12:34.313 [qdup-command-2] INFO  io.hyperfoil.tools.qdup.DebugServer - Breakpoint hit on line: 10`
+
+and allow for inspection of state;
+`$ curl -s http://localhost:31337/state`
+
+To resume execution;
+
+`$ curl -s http://localhost:21337/resume`
