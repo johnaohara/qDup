@@ -14,6 +14,7 @@ import org.slf4j.ext.XLoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -83,6 +84,8 @@ public class RunConfig {
     private Set<String> tracePatterns;
 
     private int timeout = 10;
+
+    private AtomicBoolean debugRun = new AtomicBoolean(false);
 
     protected RunConfig(
             String name,

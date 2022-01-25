@@ -101,6 +101,7 @@ public class Run implements Runnable, DispatchObserver {
     private ConsoleAppender<ILoggingEvent> consoleAppender;
     private FileAppender<ILoggingEvent> fileAppender;
     private List<Stage> skipStages;
+    private CountDownLatch debugLatch;
 
     public Run(String outputPath,RunConfig config,Dispatcher dispatcher){
         if(config==null || dispatcher==null){
@@ -166,6 +167,7 @@ public class Run implements Runnable, DispatchObserver {
         });
         this.pendingDownloads = new HashedSets<>();
         this.pendingDeletes = new HashedSets<>();
+        this.debugLatch = new CountDownLatch(config.getSettings().has("enable-debugging") ? 1 : 0);
     }
 
     public void addRunObserver(RunObserver observer){this.runObservers.add(observer);}
@@ -404,12 +406,26 @@ public class Run implements Runnable, DispatchObserver {
 
     @Override
     public void run() {
+        run(false);
+    }
+
+    public void startDebugRun(){
+        this.debugLatch.countDown();
+    }
+    public void run(boolean debug) {
+        if (debug){
+            logger.info("Waiting for debugger to connect");
+            try {
+                debugLatch.await(120, TimeUnit.SECONDS);
+//                debugLatch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                logger.error("Debugger failed connect within 120s");
+                System.exit(1);
+            }
+            logger.info("Debugger attached");
+        }
         if(Stage.Pending.equals(stage)){
-
-
-
-
-
 
             //TODO enable jitter check? what amount of jitter matters for qDup?
 //            Thread jitterThread = new Thread(new JitterCheck(),"jitter-check");

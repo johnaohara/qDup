@@ -283,6 +283,7 @@ public class CmdConstruct extends DeferableConstruct {
                 throw new YAMLException(tag+" failed to create Cmd from "+tagValue.getStartMark());
             }
             populate(rtrn,mappingNode);
+            rtrn.setSourceLineNumber(node.getStartMark().getLine() + 1); //TODO:: idk why snakeyaml is off by one - need to investigate if line number starts from 0
             return rtrn;
         }
         throw new YAMLException("Cmd "+tag+" requires a mapping node but saw "+node.getClass().getSimpleName()+" "+node.getStartMark());

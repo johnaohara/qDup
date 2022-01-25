@@ -590,6 +590,7 @@ public abstract class Cmd {
    protected boolean silent = false;
    private boolean stateScan = true;
 
+   private AtomicInteger srcLineNumber;
    int uid;
    private String output;
 
@@ -608,6 +609,7 @@ public abstract class Cmd {
       this.parent = null;
       this.stateParent = null;
       this.uid = uidGenerator.incrementAndGet();
+      this.srcLineNumber = new AtomicInteger(-1);
    }
 
    public void setStateScan(boolean stateScan){
@@ -625,6 +627,14 @@ public abstract class Cmd {
    }
 
    private void preChild(Cmd child){}
+
+   public void setSourceLineNumber(Integer lineNumber){
+      this.srcLineNumber.set(lineNumber);
+   }
+
+   public Integer getSourceLineNumber(){
+      return this.srcLineNumber.get();
+   }
 
    public boolean hasPatternPrefix(){
       return !StringUtil.PATTERN_PREFIX.equals(getPatternPrefix());
@@ -1011,6 +1021,7 @@ public abstract class Cmd {
 
    public Cmd deepCopy() {
       Cmd clone = this.copy();
+      clone.setSourceLineNumber(this.getSourceLineNumber());
       if(clone !=null){
          clone.setStateScan(this.isStateScan());
          clone.setIdleTimer(this.getIdleTimer());

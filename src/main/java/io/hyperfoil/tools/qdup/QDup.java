@@ -56,10 +56,13 @@ public class QDup {
     private List<Stage> skipStages;
 
     private boolean exitCode = false;
+    private boolean debugEnabled = false;
 
     private RunConfig config;
 
     public boolean checkExitCode(){return exitCode;}
+
+    public boolean checkDebug(){return debugEnabled;}
 
     public boolean isColorTerminal() {
         return colorTerminal;
@@ -333,6 +336,14 @@ public class QDup {
                     .build()
         );
 
+        //enable debugging
+        options.addOption(
+                Option.builder("d")
+                        .longOpt("debug")
+                        .desc("flag to enable script debugging")
+                        .build()
+        );
+
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine commandLine = null;
@@ -395,6 +406,7 @@ public class QDup {
         jsonPort = Integer.parseInt(commandLine.getOptionValue("jsonport", "" + JsonServer.DEFAULT_PORT));
 
         exitCode = commandLine.hasOption("exitCode");
+        debugEnabled = commandLine.hasOption("debug");
 
         outputPath = null;
         DateTimeFormatter dt = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
@@ -658,6 +670,7 @@ public class QDup {
         }
 
         config.getSettings().set("check-exit-code", checkExitCode());
+        config.getSettings().set("enable-debugging", debugEnabled);
 
         final Run run = new Run(getOutputPath(), config, dispatcher);
 
@@ -673,13 +686,21 @@ public class QDup {
         JsonServer jsonServer = new JsonServer(run, getJsonPort());
 
         jsonServer.start();
+        DebugServer debugServer=null;
+        if(debugEnabled) {
+            debugServer = new DebugServer(run);
+            debugServer.start();
+        }
 
         long start = System.currentTimeMillis();
         run.getRunLogger().info("Running qDup version {} @ {}", getVersion(), getHash());
-        run.run();
+        run.run(debugEnabled);
         long stop = System.currentTimeMillis();
         System.out.printf("Finished in %s at %s%n", StringUtil.durationToString(stop - start), run.getOutputPath());
         jsonServer.stop();
+        if(debugEnabled && debugServer != null) {
+            debugServer.stop();
+        }
         dispatcher.shutdown();
         executor.shutdownNow();
         scheduled.shutdownNow();
