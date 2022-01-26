@@ -1,13 +1,15 @@
 scripts:
   hello-qdup:
-    - sh: echo ${{GREETING}}
+    - set-state: GREETING Local Greeting!
+    - log: ${{GREETING}}
+    - log: ${{RUN.GREETING}}
 
   another-script:
-    - sh: echo ${{RUN.COUNTER}}
-    - set-state: RUN.COUNTER 2
-    - sh: echo ${{RUN.COUNTER}}
-    - set-state: RUN.COUNTER 3
-    - sh: echo ${{RUN.COUNTER}}
+    - log: ${{RUN.COUNTER}}
+    - set-state: RUN.COUNTER ${{= ${{RUN.COUNTER}} + 2}}
+    - log: ${{RUN.COUNTER}}
+    - set-state: COUNTER 21
+    - log: ${{COUNTER}}
 
 hosts:
   local : ${{USER}}@${{HOST}}
