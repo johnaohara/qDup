@@ -82,6 +82,7 @@ public class ScriptContext implements Context, Runnable{
     private ContextObserver observer = null;
     private Semaphore lineQueueSemaphore;
     private BlockingQueue<String> lineQueue;
+    private Map<Script, String> scriptPaths;
 
     private AtomicInteger sessionCounter = new AtomicInteger(1);
 

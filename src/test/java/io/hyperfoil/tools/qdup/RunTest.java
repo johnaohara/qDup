@@ -484,7 +484,7 @@ public class RunTest extends SshTestBase {
       Dispatcher dispatcher = new Dispatcher();
       Run doit = new Run(tmpDir.toString(), config, dispatcher);
       List<String> errors = new ArrayList<>();
-      ScriptContext context = new ScriptContext(sshSession,state,doit,new SystemTimer("test"),cmd,false){
+      ScriptContext context = new ScriptContext(sshSession,state,doit,new SystemTimer("test"),cmd,false, null){
          @Override
          public void error(String message){
             errors.add(message);

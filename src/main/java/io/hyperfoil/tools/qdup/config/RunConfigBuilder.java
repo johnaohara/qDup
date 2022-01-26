@@ -79,6 +79,7 @@ public class RunConfigBuilder {
    private int timeout = DEFAULT_SSH_TIMEOUT;
 
    private HashMap<String, Script> scripts;
+   private HashMap<Script, String> scriptPaths;
 
    private HashedSets<String, String> roleHosts;
    private HashedLists<String, ScriptCmd> roleSetup;
@@ -106,6 +107,7 @@ public class RunConfigBuilder {
    public RunConfigBuilder(String name) {
       this.name = name;
       scripts = new LinkedHashMap<>();
+      scriptPaths = new LinkedHashMap<>();
       state = new State(State.RUN_PREFIX);
       roleHosts = new HashedSets<>();
       roleSetup = new HashedLists<>();
@@ -155,7 +157,7 @@ public class RunConfigBuilder {
       getState().merge(yamlFile.getState());
 
       yamlFile.getScripts().forEach((name, script) -> {
-         addScript(script);
+         addScript(script, yamlFile.getPath());
       });
       yamlFile.getHosts().forEach((name, host) -> {
          if (hostAlias.containsKey(name) && !hostAlias.get(name).equals(host)) {
@@ -395,12 +397,17 @@ public class RunConfigBuilder {
       }
       state.getChild(host, State.HOST_PREFIX).set(key, value);
    }
-
    public boolean addScript(Script script) {
+      return addScript(script, null);
+   }
+   public boolean addScript( Script script, String scriptPath) {
       if (scripts.containsKey(script.getName())) {
          return false;
       } else {
          scripts.put(script.getName(), script);
+      }
+      if ( scriptPath != null && !scriptPaths.containsKey(script) ){
+         scriptPaths.put(script, scriptPath);
       }
       return true;
    }
@@ -640,6 +647,7 @@ public class RunConfigBuilder {
             getName(),
             summary.getErrors(),
             scripts,
+            scriptPaths,
             state,
             signalCounts.getCounts(),
             roles,

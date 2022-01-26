@@ -7,11 +7,8 @@ import io.hyperfoil.tools.qdup.cmd.Dispatcher;
 import io.hyperfoil.tools.yaup.json.Json;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
-import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.sockjs.BridgeOptions;
-import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -21,9 +18,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -42,7 +38,7 @@ public class DebugServer implements RunObserver, ContextObserver {
     private Coordinator coordinator;
 
     private final Phaser resumePhaser = new Phaser(1);
-    private final AtomicReference<Context> contextAtomicReference = new AtomicReference<>();
+    private final Map<Integer, AtomicReference<Context>> contextAtomicReference = new ConcurrentHashMap<>();
 
     private List<Integer> breakpoints = new ArrayList<>();
 
@@ -81,9 +77,9 @@ public class DebugServer implements RunObserver, ContextObserver {
             if (optionalBreakpoint.isPresent()) { //breakpoint is set
                 resumePhaser.register();
                 logger.info("Breakpoint hit on line: " + optionalBreakpoint.get());
-                contextAtomicReference.set(context);
+                contextAtomicReference.put(command.getUid(), new AtomicReference<>(context));
                 resumePhaser.arriveAndAwaitAdvance();
-                contextAtomicReference.set(null);
+                contextAtomicReference.remove(command.getUid());
                 resumePhaser.arriveAndDeregister();
             }
         }
@@ -134,7 +130,8 @@ public class DebugServer implements RunObserver, ContextObserver {
             rtrn.set("GET /resume", "resume run after breakpoint has been hit");
             rtrn.set("POST /breakpoint/:line", "set breakpoint by line number");
             rtrn.set("DEL /breakpoint/:line", "delete breakpoint by line number");
-            rtrn.set("GET /state/:stateVariable", "get value of stateVariable");
+            rtrn.set("GET /state/:uid/:stateVariable", "get value of stateVariable for cmd with uid");
+            rtrn.set("GET /commands", "get list of cmds with UIDs");
 //            rtrn.set("GET /expression/:expression","evaluate state expression");
 
             rc.response().end(rtrn.toString(2));
@@ -170,15 +167,30 @@ public class DebugServer implements RunObserver, ContextObserver {
             }
             rc.response().end(rtrn.toString(2));
         });
-        router.route("/state/:stateVariable").produces("application/json").handler(rc -> {
+        router.route("/state/:uid/:stateVariable").produces("application/json").handler(rc -> {
             String stateName = rc.request().getParam("stateVariable");
+            Integer uid = Integer.parseInt(rc.request().getParam("uid"));
             Json rtrn = new Json();
-            Context context = contextAtomicReference.get();
-            if (this.run != null && context != null) {
-                String populatedState = Cmd.populateStateVariables(stateName, context.getCurrentCmd(), context);
-                rtrn.set("result", populatedState);
+            Context context = contextAtomicReference.get(uid).get();
+            if (context != null) {
+                if (this.run != null && context != null) {
+                    String populatedState = Cmd.populateStateVariables(stateName, context.getCurrentCmd(), context);
+                    rtrn.set("result", populatedState);
+                }
+                rc.response().end(rtrn.toString(2));
+            } else {
+                rc.response().setStatusCode(500).end("Could not find cmd context with UID: " + uid);
             }
+        });
+
+        router.route("/commands").produces("application/json").handler(rc -> {
+            Json rtrn = new Json();
+            Set<Integer> cmndKeys = contextAtomicReference.keySet();
+            cmndKeys.forEach(key -> {
+                rtrn.set(key, "Line: ".concat(contextAtomicReference.get(key).get().getCurrentCmd().getSourceLineNumber().toString()));
+            });
             rc.response().end(rtrn.toString(2));
+
         });
         router.post("/breakpoint/:line").handler(rc -> {
 

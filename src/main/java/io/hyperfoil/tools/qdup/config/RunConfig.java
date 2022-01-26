@@ -66,6 +66,7 @@ public class RunConfig {
     private String passphrase;
 
     private Map<String, Script> scripts;
+    private Map<Script, String> scriptPaths;
     private State state;
 
     private Map<String,Role> roles;
@@ -91,6 +92,7 @@ public class RunConfig {
             String name,
             List<RunError> errors,
             Map<String,Script> scripts,
+            Map<Script, String> scriptPaths,
             State state,
             Counters<String> signalCounts,
             Map<String,Role> roles,
@@ -105,6 +107,7 @@ public class RunConfig {
         this.name = name;
         this.errors = errors;
         this.scripts = scripts;
+        this.scriptPaths = scriptPaths;
         this.signalCounts = signalCounts;
         this.state = state;
         this.roles = roles;
@@ -221,6 +224,19 @@ public class RunConfig {
     }
 
     public Set<String> getScriptNames(){return scripts.keySet();}
+
+    public String getScriptPath(String name){
+        return getScriptPath(getScript(name));
+    }
+
+    public String getScriptPath(Script script){
+        return scriptPaths.get(script);
+    }
+
+    public Map<Script, String> getScriptPaths() {
+        return this.scriptPaths;
+    }
+
 
     /**
      * get a script using the global state and no command variables

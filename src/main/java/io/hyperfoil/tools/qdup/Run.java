@@ -416,8 +416,8 @@ public class Run implements Runnable, DispatchObserver {
         if (debug){
             logger.info("Waiting for debugger to connect");
             try {
-                debugLatch.await(120, TimeUnit.SECONDS);
-//                debugLatch.await();
+//                debugLatch.await(120, TimeUnit.SECONDS);
+                debugLatch.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 logger.error("Debugger failed connect within 120s");
@@ -548,7 +548,8 @@ public class Run implements Runnable, DispatchObserver {
                         this,
                         profiles.get(name),
                         setup,
-                        config.getSettings().has("check-exit-code")
+                        config.getSettings().has("check-exit-code"),
+                        config.getScriptPaths()
                     );
                     getDispatcher().addScriptContext(scriptContext);
                     return session.isOpen();
@@ -600,7 +601,8 @@ public class Run implements Runnable, DispatchObserver {
                         this,
                         profiles.get(name),
                         setup,
-                        config.getSettings().has("check-exit-code")
+                        config.getSettings().has("check-exit-code"),
+                        config.getScriptPaths()
                     );
                     getDispatcher().addScriptContext(scriptContext);
                     return session.isOpen();
@@ -672,7 +674,8 @@ public class Run implements Runnable, DispatchObserver {
                                    this,
                                    profiles.get(name),
                                    setup,
-                                   config.getSettings().has("check-exit-code")
+                                   config.getSettings().has("check-exit-code"),
+                                   config.getScriptPaths()
                            );
                            getDispatcher().addScriptContext(scriptContext);
                            return session.isOpen();
@@ -744,7 +747,8 @@ public class Run implements Runnable, DispatchObserver {
                                         this,
                                         timer,
                                         script,
-                                        config.getSettings().has("check-exit-code")
+                                        config.getSettings().has("check-exit-code"),
+                                        config.getScriptPaths()
                                 );
 
                                 getDispatcher().addScriptContext(scriptContext);
@@ -833,7 +837,8 @@ public class Run implements Runnable, DispatchObserver {
                                     this,
                                     profiles.get(roleName + "-cleanup@" + host.getShortHostName()),
                                     cleanup,
-                                    config.getSettings().has("check-exit-code")
+                                    config.getSettings().has("check-exit-code"),
+                                    config.getScriptPaths()
                             );
                             getDispatcher().addScriptContext(scriptContext);
                             return session.isOpen();
