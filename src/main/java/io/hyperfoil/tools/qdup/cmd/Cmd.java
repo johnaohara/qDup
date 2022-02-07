@@ -1021,8 +1021,8 @@ public abstract class Cmd {
 
    public Cmd deepCopy() {
       Cmd clone = this.copy();
-      clone.setSourceLineNumber(this.getSourceLineNumber());
       if(clone !=null){
+         clone.setSourceLineNumber(this.getSourceLineNumber());
          clone.setStateScan(this.isStateScan());
          clone.setIdleTimer(this.getIdleTimer());
          clone.with(this.getWith());
