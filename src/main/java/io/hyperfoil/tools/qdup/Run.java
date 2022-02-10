@@ -32,7 +32,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -379,7 +383,7 @@ public class Run implements Runnable, DispatchObserver {
     public void abort(Boolean skipCleanUp){
         if(aborted.compareAndSet(false,true)){
             coordinator.clearWaiters();
-            if (!skipCleanUp && stage.isBefore(Stage.Cleanup)) {
+            if (!skipCleanUp) {
                 stageUpdated.set(this, Stage.Run);//set the stage as run so dispatcher.stop call to DispatchObserver.postStop will set it to Cleanup
             } else {
                 logger.warn("Skipping cleanup - Abort has been defined to not run any cleanup scripts");
@@ -867,13 +871,14 @@ public class Run implements Runnable, DispatchObserver {
     }
     private void postRun(){
         logger.debug("{}.postRun",this);
-        String tree = config.getState().tree();//tree filters itself
-        stateLogger.debug("{} closing state:\n{}",config.getName(),tree);
+        String tree = config.getState().tree();
+        String filteredTree = getConfig().getState().getSecretFilter().filter(tree);
+        stateLogger.debug("{} closing state:\n{}",config.getName(),filteredTree);
         runLatch.countDown();
     }
     public Dispatcher getDispatcher(){return dispatcher;}
     public Coordinator getCoordinator(){return coordinator;}
     public String getOutputPath(){ return outputPath;}
 
-    public Map<String,Long> getTimestamps(){return Collections.unmodifiableMap(new LinkedHashMap<>(timestamps));}
+    public Map<String,Long> getTimestamps(){return timestamps;}
 }

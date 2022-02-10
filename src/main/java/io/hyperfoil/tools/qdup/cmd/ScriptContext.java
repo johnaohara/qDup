@@ -37,7 +37,8 @@ public class ScriptContext implements Context, Runnable{
                ScriptContext.this.getState(),
                ScriptContext.this.getRun(),
                timer,
-               root,checkExitCode);
+               root,checkExitCode,
+               ScriptContext.this.scriptPaths);
         }
         @Override
         public void close(){
@@ -110,10 +111,10 @@ public class ScriptContext implements Context, Runnable{
         return (cmdName.isEmpty() ? "" : cmdName+":"+getRootCmd().getUid()+"@") + (getSession()!=null ? getSession().getHost().toString() : "");
     }
 
-    public ScriptContext(SshSession session, State state, Run run, SystemTimer timer, Cmd rootCmd, boolean checkExitCode){
-        this(session,state,run,timer,rootCmd.deepCopy(),null,checkExitCode);
+    public ScriptContext(SshSession session, State state, Run run, SystemTimer timer, Cmd rootCmd, boolean checkExitCode, Map<Script, String> scriptPaths){
+        this(session,state,run,timer,rootCmd.deepCopy(),null,checkExitCode, scriptPaths);
     }
-    private ScriptContext(SshSession session, State state, Run run, SystemTimer timer, Cmd rootCmd,Cmd setCurrentCmd, boolean checkExitCode){
+    private ScriptContext(SshSession session, State state, Run run, SystemTimer timer, Cmd rootCmd,Cmd setCurrentCmd, boolean checkExitCode, Map<Script, String> scriptPaths){
         this.session = session;
         this.rootCmd = rootCmd;
         this.currentCmd = null;
@@ -123,6 +124,7 @@ public class ScriptContext implements Context, Runnable{
         this.timer = timer;
         this.cmdTimer = timer;
         this.checkExitCode = checkExitCode;
+        this.scriptPaths = scriptPaths;
 
         if(this.session!=null){
             session.addLineObserver(
