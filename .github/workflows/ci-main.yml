@@ -46,7 +46,7 @@ jobs:
         run: mvn --version
       - name: Build
         run: |
-          mvn clean install -DskipTests
+          mvn -B clean install -DskipTests
       - name: Tar Maven Repo
         shell: bash
         run: tar -I 'pigz -9' -cf maven-repo.tgz -C ~ .m2/repository
@@ -84,7 +84,7 @@ jobs:
         run: tar -xzf maven-repo.tgz -C ~
       - name: Build
         run: |
-          ./mvnw clean test
+          ./mvnw -B clean test
       - name: Upload artifact for failed workflow
         if: failure()
         uses: actions/upload-artifact@v2
