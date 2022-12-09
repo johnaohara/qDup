@@ -9,6 +9,8 @@ import io.hyperfoil.tools.qdup.State;
 import io.hyperfoil.tools.yaup.json.Json;
 import io.hyperfoil.tools.yaup.time.SystemTimer;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -229,6 +231,16 @@ public class SpyContext implements Context {
     @Override
     public String getCwd() {
         return cwd;
+    }
+
+    @Override
+    public String getScratchPath() {
+        try {
+            File tmpFile = File.createTempFile("qdup-test", "");
+            return tmpFile.getAbsolutePath();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isAborted(){return aborted;}

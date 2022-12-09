@@ -57,7 +57,9 @@ public class ScriptContextTest extends SshTestBase {
             run,
             new Profiles().get("ScriptContextTest"),
             command,
-            false
+            false,
+                null
+
         );
         return context;
     }

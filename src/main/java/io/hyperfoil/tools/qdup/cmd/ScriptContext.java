@@ -37,7 +37,8 @@ public class ScriptContext implements Context, Runnable{
                ScriptContext.this.getState(),
                ScriptContext.this.getRun(),
                timer,
-               root,checkExitCode);
+               root,checkExitCode,
+                    ScriptContext.this.getScratchPath());
         }
         @Override
         public void close(){
@@ -90,12 +91,20 @@ public class ScriptContext implements Context, Runnable{
     private volatile Cmd currentCmd;
     private final Map<String,Cmd> signalCmds = new HashMap<>();
 
+    private final String scratchPath;
+
     long startTime = -1;
     long updateTime = -1;
 
     private String cwd="";
 
     public String getCwd(){return cwd;}
+
+    @Override
+    public String getScratchPath() {
+        return this.scratchPath;
+    }
+
     public void setCwd(String cwd){
         this.cwd = cwd;
     }
@@ -118,10 +127,10 @@ public class ScriptContext implements Context, Runnable{
         return (cmdName.isEmpty() ? "" : cmdName+":"+getRootCmd().getUid()+"@") + (getSession()!=null ? getSession().getHost().toString() : "");
     }
 
-    public ScriptContext(SshSession session, State state, Run run, SystemTimer timer, Cmd rootCmd, boolean checkExitCode){
-        this(session,state,run,timer,rootCmd.deepCopy(),null,checkExitCode);
+    public ScriptContext(SshSession session, State state, Run run, SystemTimer timer, Cmd rootCmd, boolean checkExitCode, String scratchPath){
+        this(session,state,run,timer,rootCmd.deepCopy(),null,checkExitCode, scratchPath);
     }
-    private ScriptContext(SshSession session, State state, Run run, SystemTimer timer, Cmd rootCmd,Cmd setCurrentCmd, boolean checkExitCode){
+    private ScriptContext(SshSession session, State state, Run run, SystemTimer timer, Cmd rootCmd,Cmd setCurrentCmd, boolean checkExitCode, String scratchPath){
         this.session = session;
         this.rootCmd = rootCmd;
         this.currentCmd = null;
@@ -131,6 +140,7 @@ public class ScriptContext implements Context, Runnable{
         this.timer = timer;
         this.cmdTimer = timer;
         this.checkExitCode = checkExitCode;
+        this.scratchPath = scratchPath;
 
         if(this.session!=null){
             session.addLineObserver(

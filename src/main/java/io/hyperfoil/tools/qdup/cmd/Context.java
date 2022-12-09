@@ -49,4 +49,5 @@ public interface Context {
 
     String getCwd();
 
+    String getScratchPath();
 }

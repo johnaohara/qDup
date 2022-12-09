@@ -88,6 +88,12 @@ public class Parser {
         );
         rtrn.addValuePattern("host", Host.HOST_PATTERN);
 
+        GitBisect.GitBisectInitCmd.extendParse(rtrn);
+        GitBisect.GitBisectCmd.extendParse(rtrn);
+        GitBisect.GitBisectUpdateCmd.extendParse(rtrn);
+        QdupProcessCmd.extendParse(rtrn);
+        ScalarFileLimitValidatorCmd.extendParse(rtrn);
+
         rtrn.addCmd(
                 Abort.class,
                 "abort",
@@ -521,11 +527,11 @@ public class Parser {
                     }
                 },
                 (json) -> new SetState(
-                    json.getString("key"),
-                    json.getString("value", null),
-                    json.getString("separator", StringUtil.PATTERN_DEFAULT_SEPARATOR),
-                    json.getBoolean("silent", false),
-                    json.getBoolean("autoConvert", true)
+                        json.getString("key"),
+                        json.getString("value", null),
+                        json.getString("separator", StringUtil.PATTERN_DEFAULT_SEPARATOR),
+                        json.getBoolean("silent", false),
+                        json.getBoolean("autoConvert", true)
                 ),
                 "key","value","separator","silent","autoConvert"
         );

@@ -61,6 +61,11 @@ public class SyncContext implements Context, Runnable{
         }
     }
 
+    @Override
+    public String getScratchPath() {
+        throw new RuntimeException("Not yet Implemented");
+    }
+
     public Run getRun(){ return run;}
 
     @Override

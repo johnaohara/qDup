@@ -98,6 +98,7 @@ public class Run implements Runnable, DispatchObserver {
     private Map<String,Long> timestamps;
     private RunConfig config;
     private String outputPath;
+    private String scratchPath;
     private AtomicBoolean aborted;
     private Coordinator coordinator;
     private Dispatcher dispatcher;
@@ -125,6 +126,7 @@ public class Run implements Runnable, DispatchObserver {
         this.config = config;
 
         this.outputPath = outputPath;
+        this.scratchPath = outputPath + "-scratch";
         this.dispatcher = dispatcher;
         this.dispatcher.addDispatchObserver(this);
         this.stage = Stage.Pending;
@@ -627,7 +629,8 @@ public class Run implements Runnable, DispatchObserver {
                         this,
                         profiles.get(name),
                         setup,
-                            (Boolean)config.getSetting("check-exit-code",false)
+                        (Boolean)config.getSetting("check-exit-code",false),
+                        scratchPath
                     );
                     getDispatcher().addScriptContext(scriptContext);
                     return session.isOpen();
@@ -679,7 +682,8 @@ public class Run implements Runnable, DispatchObserver {
                         this,
                         profiles.get(name),
                         setup,
-                            (Boolean)config.getSetting("check-exit-code",false)
+                        (Boolean)config.getSetting("check-exit-code",false),
+                        scratchPath
                     );
                     getDispatcher().addScriptContext(scriptContext);
                     return session.isOpen();
@@ -751,7 +755,8 @@ public class Run implements Runnable, DispatchObserver {
                                    this,
                                    profiles.get(name),
                                    setup,
-                                   (Boolean)config.getSetting("check-exit-code",false)
+                                   (Boolean)config.getSetting("check-exit-code",false),
+                                   scratchPath
                            );
                            getDispatcher().addScriptContext(scriptContext);
                            return session.isOpen();
@@ -822,7 +827,8 @@ public class Run implements Runnable, DispatchObserver {
                                         this,
                                         timer,
                                         script,
-                                        (Boolean)config.getSetting("check-exit-code",false)
+                                        (Boolean)config.getSetting("check-exit-code",false),
+                                        scratchPath
                                 );
 
                                 getDispatcher().addScriptContext(scriptContext);
@@ -916,7 +922,8 @@ public class Run implements Runnable, DispatchObserver {
                                     this,
                                     profiles.get(roleName + "-cleanup@" + host.getShortHostName()),
                                     cleanup,
-                                    (Boolean)config.getSetting("check-exit-code",false)
+                                    (Boolean)config.getSetting("check-exit-code",false),
+                                    scratchPath
                             );
                             getDispatcher().addScriptContext(scriptContext);
                             return session.isOpen();

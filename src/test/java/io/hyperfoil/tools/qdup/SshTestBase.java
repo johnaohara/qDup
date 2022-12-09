@@ -238,6 +238,8 @@ public class SshTestBase {
 
         private TmpDir() throws IOException {
             tempDirWithPrefix = Files.createTempDirectory("qdup");
+            File scratchFile = new File(tempDirWithPrefix.toString() + "-scratch");
+            scratchFile.mkdirs();
         }
 
         public static TmpDir instance(){

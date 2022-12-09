@@ -129,7 +129,7 @@ public class ScriptCmd extends Cmd {
                 //copy withs because it will not be inherited
                 copyCmd.loadWith(this);
 
-                ScriptContext scriptContext = new ScriptContext(ssh,state,run,context.getContextTimer().start(populatedName,true),copyCmd,context.checkExitCode());
+                ScriptContext scriptContext = new ScriptContext(ssh,state,run,context.getContextTimer().start(populatedName,true),copyCmd,context.checkExitCode(), context.getScratchPath());
                 if(run!=null){ //register context so phase does not end before script completes
                     //dispatcher will also start the context
                     run.getDispatcher().addScriptContext(scriptContext);
